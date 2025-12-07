@@ -44,7 +44,9 @@ class Adaptation extends Entity implements Serializable {
         /** Preferably [0, infinity) but it's not a hard rule. */
         double explorationWeight,
         List<AdaptationObjex> objexes,
-        List<AdaptationMorphism> morphisms
+        List<AdaptationMorphism> morphisms,
+        /** All datasources that might be used in the adaptation. */
+        List<Id> datasourceIds
     ) implements Serializable {}
 
     /**
@@ -64,11 +66,7 @@ class Adaptation extends Entity implements Serializable {
         boolean isReferenceAllowed,
         boolean isEmbeddingAllowed,
         boolean isInliningAllowed
-    ) implements Serializable {
-        static AdaptationMorphism createDefault(BaseSignature signature) {
-            return new AdaptationMorphism(signature, true, false, false);
-        }
-    }
+    ) implements Serializable {}
 
     record AdaptationSolution(
         double price,

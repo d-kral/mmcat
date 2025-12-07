@@ -30,6 +30,10 @@ public class ExampleController {
     @Qualifier("inferenceExampleSetup")
     cz.matfyz.server.example.inference.ExampleSetup inferenceExampleSetup;
 
+    @Autowired
+    @Qualifier("adaptationExampleSetup")
+    cz.matfyz.server.example.adaptation.ExampleSetup adaptationExampleSetup;
+
     @PostMapping("/example-schema/{name}")
     public SchemaCategoryInfo createExampleCategory(@PathVariable String name) {
         final SchemaCategoryEntity categoryEntity = switch (name) {
@@ -40,6 +44,7 @@ public class ExampleController {
             case "query-evolution-3" -> queryEvolutionExampleSetup.setup(3);
             case "query-evolution-4" -> queryEvolutionExampleSetup.setup(4);
             case "inference" -> inferenceExampleSetup.setup();
+            case "adaptation" -> adaptationExampleSetup.setup();
             default -> throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         };
 

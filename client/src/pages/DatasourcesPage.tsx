@@ -93,7 +93,7 @@ export type DatasourcesLoaderData = {
 
 DatasourcesPage.loader = async (): Promise<DatasourcesLoaderData> =>{
     const [ datasourcesResponse, mappingsResponse ] = await Promise.all([
-        api.datasources.getAllDatasources({}),
+        api.datasources.getAllDatasources({}, {}),
         api.mappings.getAllMappings({}),
     ]);
 

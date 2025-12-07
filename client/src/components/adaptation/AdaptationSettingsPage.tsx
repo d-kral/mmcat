@@ -58,16 +58,32 @@ export function AdaptationSettingsPage({ category, datasources, queries, updateQ
                     isWheelDisabled
                     label='Exploration weight'
                     value={state.form.explorationWeight}
-                    onValueChange={value => dispatch({ type: 'form', explorationWeight: value })}
+                    onValueChange={value => dispatch({ type: 'form', field: 'explorationWeight', value })}
                 />
+
+                <Select
+                    className='col-span-2'
+                    selectionMode='multiple'
+                    label='Enabled datasources'
+                    selectedKeys={state.form.datasourceIds}
+                    placeholder='Select a datasource'
+                    onSelectionChange={keys => dispatch({ type: 'form', field: 'datasourceIds', value: keys as Set<string> })}
+                    items={datasources}
+                >
+                    {datasource => (
+                        <SelectItem key={datasource.id}>{datasource.label}</SelectItem>
+                    )}
+                </Select>
             </div>
 
             <h2 className='mb-2 text-lg font-semibold'>Kinds & Relationships</h2>
 
             <div className='mb-4 grid grid-cols-4 gap-4'>
-                <Card className='col-span-3'>
-                    <KindGraphDisplay graph={state.graph} selection={state.selection} dispatch={dispatch} className='h-[300px]' />
-                </Card>
+                <div className='col-span-3'>
+                    <Card>
+                        <KindGraphDisplay graph={state.graph} selection={state.selection} dispatch={dispatch} className='h-[300px]' />
+                    </Card>
+                </div>
 
                 <Card className='p-4'>
                     {state.selection.firstNodeId ? (
@@ -147,7 +163,7 @@ function NodeEditor({ state, dispatch, datasources }: NodeEditorProps) {
                 labelPlacement='outside'
                 classNames={{ label: 'text-sm font-semibold !text-foreground-400' }}
                 size='sm'
-                placeholder='Select datasource'
+                placeholder='Not included'
                 selectedKeys={datasource ? [ datasource.id ] : []}
                 renderValue={items => items.map(item => (
                     <div key={item.key} className='flex items-center gap-2'>
@@ -195,7 +211,14 @@ function EdgeEditor({ state, dispatch }: EdgeEditorProps) {
     const { graph, selection } = state;
 
     const selectedEdge = graph.edges.get(selection.firstEdgeId!)!;
-    const morphism = state.adaptation.settings.morphisms.get(getEdgeSignature(selectedEdge.id))!;
+    const morphism = state.adaptation.settings.morphisms.get(getEdgeSignature(selectedEdge.id));
+    // The morphism might not exist yet.
+    // TODO If not, we should probably create it in the form (and we should use the form state).
+    const {
+        isReferenceAllowed = false,
+        isEmbeddingAllowed = false,
+        isInliningAllowed = false,
+    } = morphism ?? {};
 
     function setMorphism(edit: Partial<Omit<AdaptationMorphism, 'signature'>>) {
 
@@ -205,15 +228,15 @@ function EdgeEditor({ state, dispatch }: EdgeEditorProps) {
         <h3 className='mb-2 text-lg font-semibold'>Edit Relationship</h3>
 
         <h4 className='mb-1 text-sm font-semibold text-foreground-400'>Allowed operations</h4>
-        <Checkbox isSelected={morphism.isReferenceAllowed} onValueChange={value => setMorphism({ isReferenceAllowed: value })}>
+        <Checkbox isSelected={isReferenceAllowed} onValueChange={value => setMorphism({ isReferenceAllowed: value })}>
             Reference
         </Checkbox>
 
-        <Checkbox isSelected={morphism.isEmbeddingAllowed} onValueChange={value => setMorphism({ isEmbeddingAllowed: value })}>
+        <Checkbox isSelected={isEmbeddingAllowed} onValueChange={value => setMorphism({ isEmbeddingAllowed: value })}>
             Embedding
         </Checkbox>
 
-        <Checkbox isSelected={morphism.isInliningAllowed} onValueChange={value => setMorphism({ isInliningAllowed: value })}>
+        <Checkbox isSelected={isInliningAllowed} onValueChange={value => setMorphism({ isInliningAllowed: value })}>
             Inlining
         </Checkbox>
     </>);

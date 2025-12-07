@@ -2,19 +2,24 @@ package cz.matfyz.server.example.common;
 
 import cz.matfyz.core.datasource.Datasource.DatasourceType;
 import cz.matfyz.server.datasource.DatasourceInit;
-import cz.matfyz.server.utils.Configuration.SetupProperties;
 import cz.matfyz.wrappermongodb.MongoDBProvider.MongoDBSettings;
 import cz.matfyz.wrapperneo4j.Neo4jProvider.Neo4jSettings;
 import cz.matfyz.wrapperpostgresql.PostgreSQLProvider.PostgreSQLSettings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class DatasourceSettings {
+public class DatasourceBuilder {
 
-    private SetupProperties properties;
+    public interface DatasourceProperties {
+        Boolean isInDocker();
+        String username();
+        String password();
+    }
+
+    private DatasourceProperties properties;
     private String database;
 
-    public DatasourceSettings(SetupProperties properties, String database) {
+    public DatasourceBuilder(DatasourceProperties properties, String database) {
         this.properties = properties;
         this.database = database;
     }

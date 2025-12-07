@@ -8,7 +8,7 @@ import cz.matfyz.core.schema.SchemaCategory;
 
 public abstract class Schema {
 
-    public static final String schemaLabel = "Benchmark Yelp Schema";
+    public static final String schemaLabel = "Benchmark Cal.com Schema";
 
     private static final SchemaBuilder builder = new SchemaBuilder();
 
@@ -60,7 +60,7 @@ public abstract class Schema {
     public static final BuilderObjex roleDescription =      builder.objex("roleDescription");
 
 
-    // Morphisms
+    // Signatures
 
     public static final BuilderMorphism eventTypeToId =         builder.morphism(eventType, eventTypeId);
     public static final BuilderMorphism eventTypeToTitle =      builder.morphism(eventType, eventTypeTitle);

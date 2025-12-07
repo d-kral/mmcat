@@ -5,6 +5,7 @@ import { type Category } from '@/types/schema';
 import { type GraphMoveEvent } from '../graph/graphEngine';
 import { type Adaptation } from './adaptation';
 import { categoryToKindGraph, type KindGraph } from './kindGraph';
+import { type Id } from '@/types/id';
 
 export function useAdaptationSettings(category: Category, adaptation: Adaptation) {
     const [ state, dispatch ] = useReducer(adaptationSettingsReducer, { category, adaptation }, createInitialState);
@@ -28,6 +29,7 @@ function createInitialState({ category, adaptation }: { category: Category, adap
         selection: FreeSelection.create(),
         form: {
             explorationWeight: adaptation.settings.explorationWeight,
+            datasourceIds: new Set(adaptation.settings.datasources.map(ds => ds.id)),
         },
     };
 }
@@ -76,13 +78,19 @@ function selection(state: AdaptationSettingsState, { selection }: SelectionActio
 
 export type AdaptationSettingsForm = {
     explorationWeight: number;
+    datasourceIds: Set<Id>;
 };
 
 type FormAction = {
     type: 'form';
-    explorationWeight: number;
-};
+} & ({
+    field: 'explorationWeight';
+    value: number;
+} | {
+    field: 'datasourceIds';
+    value: Set<Id>;
+});
 
 function form(state: AdaptationSettingsState, action: FormAction): AdaptationSettingsState {
-    return { ...state, form: { ...state.form, explorationWeight: action.explorationWeight } };
+    return { ...state, form: { ...state.form, [action.field]: action.value } };
 }

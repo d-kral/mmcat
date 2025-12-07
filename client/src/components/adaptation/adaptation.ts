@@ -39,12 +39,14 @@ type AdaptationSettingsResponse = {
     explorationWeight: number;
     objexes: AdaptationObjexResponse[];
     morphisms: AdaptationMorphismResponse[];
+    datasourceIds: Id[];
 };
 
 export type AdaptationSettings = {
     explorationWeight: number;
     objexes: ComparableMap<Key, number, AdaptationObjex>;
     morphisms: ComparableMap<Signature, string, AdaptationMorphism>;
+    datasources: Datasource[];
 };
 
 function adaptationSettingsFromResponse(input: AdaptationSettingsResponse, datasources: Datasource[]): AdaptationSettings {
@@ -65,6 +67,7 @@ function adaptationSettingsFromResponse(input: AdaptationSettingsResponse, datas
         explorationWeight: input.explorationWeight,
         objexes,
         morphisms,
+        datasources: datasources.filter(d => input.datasourceIds.includes(d.id)),
     };
 }
 
@@ -109,28 +112,7 @@ export type AdaptationResult = {
 
 export function adaptationResultFromResponse(input: AdaptationResultResponse, datasources: Datasource[], queries: Query[]): AdaptationResult {
     return {
-        solutions: input.solutions.map(solutionResponse => {
-            const objexes = new ComparableMap<Key, number, AdaptationObjex>(key => key.value);
-            for (const objexResponse of solutionResponse.objexes) {
-                const objex = adaptationObjexFromResponse(objexResponse, datasources);
-                objexes.set(objex.key, objex);
-            }
-
-            const adaptationQueries = new Map<Id, AdaptationQuery>();
-            for (const query of solutionResponse.queries) {
-                const inputQuery = queries.find(q => q.id === query.id);
-                if (inputQuery)
-                    adaptationQueries.set(query.id, { query: inputQuery, speedup: query.speedup });
-            }
-
-            return {
-                id: solutionResponse.id,
-                speedup: solutionResponse.speedup,
-                price: solutionResponse.price,
-                objexes,
-                queries: adaptationQueries,
-            } satisfies AdaptationSolution;
-        }),
+        solutions: input.solutions.map(solutionResponse => adaptationSolutionFromResponse(solutionResponse, datasources, queries)),
     };
 }
 
@@ -154,6 +136,29 @@ export type AdaptationSolution = {
     queries: Map<Id, AdaptationQuery>;
 };
 
+function adaptationSolutionFromResponse(input: AdaptationSolutionResponse, datasources: Datasource[], queries: Query[]): AdaptationSolution {
+    const objexes = new ComparableMap<Key, number, AdaptationObjex>(key => key.value);
+    for (const objexResponse of input.objexes) {
+        const objex = adaptationObjexFromResponse(objexResponse, datasources);
+        objexes.set(objex.key, objex);
+    }
+
+    const adaptationQueries = new Map<Id, AdaptationQuery>();
+    for (const query of input.queries) {
+        const inputQuery = queries.find(q => q.id === query.id);
+        if (inputQuery)
+            adaptationQueries.set(query.id, { query: inputQuery, speedup: query.speedup });
+    }
+
+    return {
+        id: input.id,
+        speedup: input.speedup,
+        price: input.price,
+        objexes,
+        queries: adaptationQueries,
+    } satisfies AdaptationSolution;
+}
+
 export type AdaptationQueryResponse = {
     id: Id;
     speedup: number;
@@ -168,21 +173,24 @@ export type AdaptationQuery = {
 
 /** @deprecated */
 export function mockAdaptationResultResponse(adaptation: Adaptation, datasources: Datasource[], queries: Query[]): AdaptationResultResponse {
-    const { postgres, mongo, neo4j } = getBasicDatasources(datasources);
+    const { postgres, mongo, neo4j } = getBasicDatasources(adaptation, datasources);
 
     return {
         solutions: [
             mockAdaptationSolutionResponse(adaptation, 42.37, {
-                [postgres.id]: [ 21, 1 ],
-                [mongo.id]: [ 52 ],
-                [neo4j.id]: [ 51 ],
+                [postgres.id]: [ 40, 50 ],
+                [mongo.id]: [ 70, 80 ],
+                [neo4j.id]: [ 30 ],
             }, queries),
             mockAdaptationSolutionResponse(adaptation, 55.91, {
-                [mongo.id]: [ 52, 21, 1 ],
-                [neo4j.id]: [ 51 ],
+                [postgres.id]: [ 70 ],
+                [mongo.id]: [ 30, 40, 50 ],
+                [neo4j.id]: [ 80 ],
             }, queries),
             mockAdaptationSolutionResponse(adaptation, 63.31, {
-                [postgres.id]: [ 1, 3, 41, 51, 61, 71 ],
+                // This should be the initial settings.
+                [postgres.id]: [ 70, 80 ],
+                [neo4j.id]: [ 30, 40, 50 ],
             }, queries),
         ]
             .sort((a, b) => b.speedup - a.speedup)
@@ -196,11 +204,23 @@ export function mockAdaptationResultResponse(adaptation: Adaptation, datasources
     };
 }
 
-function getBasicDatasources(datasources: Datasource[]) {
+function getBasicDatasources(adaptation: Adaptation, datasources: Datasource[]) {
+    const usedIds = new Set<Id>();
+    adaptation.settings.objexes.values().forEach(objex => {
+        if (objex.datasource)
+            usedIds.add(objex.datasource.id);
+    });
+
+    // We want to hit all basic types if possible. And ideally those created specifically for this adaptation. Not ideal tho.
+    const searched = [
+        ...datasources.filter(d => usedIds.has(d.id)),
+        ...datasources.toReversed(),
+    ];
+
     return {
-        postgres: datasources.find(d => d.type === DatasourceType.postgresql)!,
-        mongo: datasources.find(d => d.type === DatasourceType.mongodb)!,
-        neo4j: datasources.find(d => d.type === DatasourceType.neo4j)!,
+        postgres: searched.find(d => d.type === DatasourceType.postgresql)!,
+        mongo: searched.find(d => d.type === DatasourceType.mongodb)!,
+        neo4j: searched.find(d => d.type === DatasourceType.neo4j)!,
     };
 }
 

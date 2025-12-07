@@ -88,7 +88,8 @@ AdaptationPage.loader = async ({ params: { categoryId } }: { params: Params<'cat
 
     const [ categoryResponse, datasourcesResponse, mappingsResponse, adaptationsResponse ] = await Promise.all([
         api.schemas.getCategory({ id: categoryId }),
-        api.datasources.getAllDatasources({}, { categoryId }),
+        // We want all datasources here, not just those in the category.
+        api.datasources.getAllDatasources({}, {}),
         api.mappings.getAllMappingsInCategory({}, { categoryId }),
         api.adaptations.getAdaptationForCategory({ categoryId }),
     ]);

@@ -38,8 +38,9 @@ CREATE TABLE datasource (
     json_value JSONB NOT NULL
 );
 
-INSERT INTO datasource (id, json_value)
-VALUES
+-- TODO Find a better place for these inserts. Probably in the basic (or inference) example setup.
+-- INSERT INTO datasource (id, json_value)
+-- VALUES
     -- Files for Yelp_big
     -- ('00000002-aabd-4195-1d12-94abf4fceeb0', '{
     --     "label": "Yelp_big Business",
@@ -87,42 +88,42 @@ VALUES
     --     }
     -- }'),
     -- Files for Yelp_small
-    ('00000005-aabd-4195-4d12-94abf4fceeb0', '{
-        "label": "Yelp User",
-        "type": "json",
-        "settings": {
-            "url": "https://data.mmcatdb.com/yelp_small/user.json",
-            "isWritable": false,
-            "isQueryable": false
-        }
-    }'),
-    ('00000006-aabd-4195-cd12-94abf4fceeb0', '{
-        "label": "Yelp Tip",
-        "type": "json",
-        "settings": {
-            "url": "https://data.mmcatdb.com/yelp_small/tip.json",
-            "isWritable": false,
-            "isQueryable": false
-        }
-    }'),
-    ('00000007-aabd-4195-4d12-94abf4fceeb0', '{
-        "label": "Yelp Business",
-        "type": "json",
-        "settings": {
-            "url": "https://data.mmcatdb.com/yelp_small/business.json",
-            "isWritable": false,
-            "isQueryable": false
-        }
-    }'),
-    ('00000008-aabd-4195-cd12-94abf4fceeb0', '{
-        "label": "Yelp Checkin",
-        "type": "json",
-        "settings": {
-            "url": "https://data.mmcatdb.com/yelp_small/checkin.json",
-            "isWritable": false,
-            "isQueryable": false
-        }
-    }');
+    -- ('00000005-aabd-4195-4d12-94abf4fceeb0', '{
+    --     "label": "Yelp User",
+    --     "type": "json",
+    --     "settings": {
+    --         "url": "https://data.mmcatdb.com/yelp_small/user.json",
+    --         "isWritable": false,
+    --         "isQueryable": false
+    --     }
+    -- }'),
+    -- ('00000006-aabd-4195-cd12-94abf4fceeb0', '{
+    --     "label": "Yelp Tip",
+    --     "type": "json",
+    --     "settings": {
+    --         "url": "https://data.mmcatdb.com/yelp_small/tip.json",
+    --         "isWritable": false,
+    --         "isQueryable": false
+    --     }
+    -- }'),
+    -- ('00000007-aabd-4195-4d12-94abf4fceeb0', '{
+    --     "label": "Yelp Business",
+    --     "type": "json",
+    --     "settings": {
+    --         "url": "https://data.mmcatdb.com/yelp_small/business.json",
+    --         "isWritable": false,
+    --         "isQueryable": false
+    --     }
+    -- }'),
+    -- ('00000008-aabd-4195-cd12-94abf4fceeb0', '{
+    --     "label": "Yelp Checkin",
+    --     "type": "json",
+    --     "settings": {
+    --         "url": "https://data.mmcatdb.com/yelp_small/checkin.json",
+    --         "isWritable": false,
+    --         "isQueryable": false
+    --     }
+    -- }');
 
 CREATE TABLE mapping (
     id UUID PRIMARY KEY,

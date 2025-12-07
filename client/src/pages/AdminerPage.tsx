@@ -71,7 +71,7 @@ type AdminerLoaderData = {
 };
 
 AdminerPage.loader = async (): Promise<AdminerLoaderData> => {
-    const response = await api.datasources.getAllDatasources({});
+    const response = await api.datasources.getAllDatasources({}, {});
 
     if (!response.status)
         throw new Error('Failed to load datasources');

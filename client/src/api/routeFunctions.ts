@@ -14,7 +14,7 @@ export function GET<U extends UrlParams, T, Q extends QueryParams = void>(url: U
 */
 
 export function GET<U extends UrlParams, T, Q extends QueryParams = void>(url: Url<U>): PullRoute<U, T, Q> {
-    return (urlParams: U, queryParams: Q | undefined) => rawAPI.GET<T>(url(urlParams), queryParams || {});
+    return ((urlParams: U, queryParams?: Q) => rawAPI.GET<T>(url(urlParams), queryParams || {})) as PullRoute<U, T, Q>;
 }
 
 export function POST<U extends UrlParams, T, D extends PushData = void>(url: Url<U>): PushRoute<U, T, D> {

@@ -132,7 +132,7 @@ DatasourcesInCategoryPage.loader = async ({ params: { categoryId } }: { params: 
 
     const [ inCategoryResponse, allResponse, allMappingsResponse ] = await Promise.all([
         api.datasources.getAllDatasources({}, { categoryId }),
-        api.datasources.getAllDatasources({}),
+        api.datasources.getAllDatasources({}, {}),
         api.mappings.getAllMappings({}), // Get ALL mappings to check for datasources used elsewhere
     ]);
 

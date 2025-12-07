@@ -182,9 +182,11 @@ function AdaptationSolutionGraph({ category, adaptation, solution }: AdaptationS
 
     return (
         <div className='grid grid-cols-4 gap-4'>
-            <Card className='col-span-3'>
-                <KindGraphDisplay graph={graph} selection={selection} dispatch={dispatch} className='h-[300px]' />
-            </Card>
+            <div className='col-span-3'>
+                <Card>
+                    <KindGraphDisplay graph={graph} selection={selection} dispatch={dispatch} className='h-[300px]' />
+                </Card>
+            </div>
 
             <Card className='p-4'>
                 {selectedNode ? (<>

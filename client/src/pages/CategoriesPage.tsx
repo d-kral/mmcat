@@ -16,7 +16,7 @@ import { PageLayout } from '@/components/RootLayout';
 
 export const EMPTY_CATEGORY = 'empty';
 /** List of example schema names available for creation. */
-export const EXAMPLE_CATEGORIES = [ 'basic', 'adminer' ] as const;
+export const EXAMPLE_CATEGORIES = [ 'basic', 'adminer', 'adaptation' ] as const;
 
 type NewCategoryType = typeof EMPTY_CATEGORY | typeof EXAMPLE_CATEGORIES[number];
 

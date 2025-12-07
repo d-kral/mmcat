@@ -1,5 +1,7 @@
 package cz.matfyz.server.utils;
 
+import cz.matfyz.server.example.common.DatasourceBuilder.DatasourceProperties;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 public class Configuration {
@@ -26,10 +28,11 @@ public class Configuration {
         String username,
         String password,
         String basicDatabase,
+        String adminerDatabase,
         String queryEvolutionDatabase,
         String inferenceDatabase,
-        String adminerDatabase
-    ) {}
+        String adaptationDatabase
+    ) implements DatasourceProperties {}
 
     @ConfigurationProperties("spark")
     public record SparkProperties(

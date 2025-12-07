@@ -158,6 +158,13 @@ public abstract class SchemaBase {
         addSchemaOperation(new Composite(name, innerContext));
     }
 
+    protected void addProperty(BuilderObjex builderObjex, BuilderMorphism builderMorphism, double x, double y) {
+        addComposite(ADD_PROPERTY, () -> {
+            addObjex(builderObjex, x, y);
+            addMorphism(builderMorphism);
+        });
+    }
+
     protected static final String ADD_PROPERTY = "addProperty";
     protected static final String ADD_SET = "addSet";
     protected static final String ADD_MAP = "addMap";

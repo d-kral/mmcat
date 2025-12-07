@@ -157,7 +157,13 @@ export function computeCoordinates(nodes: Node[], width: number, height: number)
     const minY = Math.min(...yPositions);
     const maxY = Math.max(...yPositions);
 
-    const scale = Math.min(width / (100 + maxX - minX), height / (100 + maxY - minY));
+    // Because the nodes and their labels take some space.
+    // Used only for determining the initial scale.
+    const canvasPaddingX = 2 * Math.max(width * 0.05, 50);
+    const canvasPaddingY = 2 * Math.max(height * 0.05, 30);
+
+    // The 1 is here to avoid division by zero.
+    const scale = Math.min((width - canvasPaddingX) / (1 + maxX - minX), (height - canvasPaddingY) / (1 + maxY - minY));
 
     const centroid = {
         x: (minX + maxX) / 2,
