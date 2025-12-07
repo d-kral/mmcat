@@ -96,10 +96,10 @@ MappingPage.loader = async ({ params: { categoryId, mappingId } }: { params: Par
 
 function MappingDetailInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Defining a Mapping</h2>
+        <h2 className='text-lg font-semibold mb-2'>Understanding Mappings</h2>
 
         {/* TODO */}
-        {/* <ul className='mt-2 text-sm space-y-2'>
+        {/* <ul className='mt-2 space-y-2'>
                 <li className='flex items-center gap-2'>
                     <GoDotFill className='text-primary-500' />
                     <span className='font-bold'>Edit:</span> You can update connection details, but the type cannot be changed.

@@ -86,7 +86,7 @@ export function QueriesTable({ queries, onUpdate, onDelete, itemsPerPage, soluti
                     <TableColumn key='version' allowsSorting align='end'>Version</TableColumn>,
                     <TableColumn key='weight' allowsSorting align='end'>Weight (<span className='italic'>normalized</span>)</TableColumn>,
                     ...(solution ? [
-                        <TableColumn key='speedup' allowsSorting align='end'>Speed up [<XMarkIcon className='inline size-4' />]</TableColumn>,
+                        <TableColumn key='speedup' allowsSorting align='end'>Speed-up [<XMarkIcon className='inline size-4' />]</TableColumn>,
                     ] : []),
                     <TableColumn key='actions' minWidth={88} align='end'><span className='mr-4'>Actions</span></TableColumn>,
                 ]}

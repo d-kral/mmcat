@@ -155,17 +155,17 @@ export function MappingInfoInner() {
     return (<>
         <h2 className='text-lg font-semibold mb-4'>Understanding Mapping & Data Sources</h2>
 
-        <p className='text-sm'>
+        <p>
             Before creating a <span className='font-bold'>Mapping</span>, you need to connect a <span className='font-bold'>Data Source</span>.
             A Data Source represents where your data is stored, such as a database, or file.
         </p>
 
-        <p className='text-sm mt-2'>
+        <p className='mt-2'>
             Once a Data Source is connected, you can create a <em>Mapping</em> on a <em>Schema Category</em>, linking the source to the <em>Conceptual Schema</em>.
             A <span className='font-bold'>Mapping</span> defines how data is structured and stored, using a <em>JSON-like access path</em> to describe relationships between objects.
         </p>
 
-        <ul className='mt-3 text-sm space-y-2'>
+        <ul className='mt-3 space-y-2'>
             <li className='flex items-center gap-2'>
                 <GoDotFill className='text-primary-500' />
                 <span className='font-bold'>Mapping:</span> Defines how conceptual schema elements relate to database structures.
@@ -180,7 +180,7 @@ export function MappingInfoInner() {
             </li>
         </ul>
 
-        <p className='text-sm mt-3'>
+        <p className='mt-3'>
             Mappings ensure data is correctly structured and accessible for transformations. Choose an appropriate <em>data source</em> to connect to the Conceptual Schema.
         </p>
     </>);

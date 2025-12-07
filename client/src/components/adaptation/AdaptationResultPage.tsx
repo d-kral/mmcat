@@ -12,6 +12,9 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { dataSizeQuantity, plural, prettyPrintDouble, prettyPrintInt } from '@/types/utils/common';
 import { type Query } from '@/types/query';
 import { QueriesTable } from '../querying/QueriesTable';
+import { InfoBanner, InfoTooltip } from '../common/components';
+import { useBannerState } from '@/types/utils/useBannerState';
+import { GoDotFill } from 'react-icons/go';
 
 type AdaptationResultPageProps = {
     category: Category;
@@ -21,6 +24,8 @@ type AdaptationResultPageProps = {
 };
 
 export function AdaptationResultPage({ category, adaptation, result, queries }: AdaptationResultPageProps) {
+    const banner = useBannerState('adaptation-result-page');
+
     const [ selectedSolution, setSelectedSolution ] = useState<AdaptationSolution>();
     const [ isShowExcluded, setIsShowExcluded ] = useState(false);
 
@@ -41,9 +46,25 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
         };
     }, [ category, adaptation, isShowExcluded ]);
 
+    function restart() {
+        // TODO
+    }
+
+    function acceptSolution() {
+        // TODO
+    }
+
     return (
         <PageLayout className='space-y-2'>
-            <h1 className='text-xl font-semibold'>Adaptation</h1>
+            <div className='flex items-center gap-2 mb-4'>
+                <h1 className='text-xl font-bold text-default-800'>Adaptation</h1>
+
+                <InfoTooltip {...banner} />
+            </div>
+
+            <InfoBanner {...banner} className='mb-6'>
+                <AdaptationResultInfoInner />
+            </InfoBanner>
 
             <h2 className='text-lg font-semibold'>Solutions</h2>
 
@@ -51,7 +72,7 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
                 <div>
                     <div className='py-3 flex flex-col gap-1'>
                         <div className='h-5 font-semibold'>Id</div>
-                        <div className='h-5 font-semibold'>Speed up [<XMarkIcon className='inline size-4' />]</div>
+                        <div className='h-5 font-semibold'>Speed-up [<XMarkIcon className='inline size-4' />]</div>
                         <div className='h-5 font-semibold'>Price [DB hits]</div>
                     </div>
 
@@ -99,9 +120,47 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
             <AdaptationSolutionGraph category={category} adaptation={adaptation} solution={selectedSolution} />
 
             <h2 className='mt-4 text-lg font-semibold'>{selectedSolution ? `Solution #${selectedSolution.id}` : 'Original'} Queries</h2>
-            <QueriesTable queries={queries} solution={selectedSolution} />
+            <QueriesTable queries={queries} solution={selectedSolution} itemsPerPage={5} />
+
+            <div className='mt-4 flex justify-end gap-2'>
+                <Button color='warning' onPress={restart}>
+                    Restart Adaptation
+                </Button>
+
+                <Button color='primary' onPress={acceptSolution} isDisabled={!selectedSolution}>
+                    Accept Solution & Migrate
+                </Button>
+            </div>
         </PageLayout>
     );
+}
+
+function AdaptationResultInfoInner() {
+    return (<>
+        <h2 className='text-lg font-semibold mb-2'>Results & Comparison</h2>
+        <p>
+            Compare the recommended mappings side-by-side. Each column corresponds to a solution (except the first one, which shows the original state), showing per-kind mappings, estimated speed-up, and migration price.
+        </p>
+
+        <ul className='mt-3 space-y-2'>
+            <li className='flex items-start gap-2'>
+                <GoDotFill className='text-primary-500' />
+                <span className='font-bold'>Table view:</span> Click a solution column to inspect it in the graph and query table.
+            </li>
+            <li className='flex items-start gap-2'>
+                <GoDotFill className='text-primary-500' />
+                <span className='font-bold'>Graph view:</span> Shows which kinds are mapped to which datasources for the selected solution.
+            </li>
+            <li className='flex items-start gap-2'>
+                <GoDotFill className='text-primary-500' />
+                <span className='font-bold'>Query table:</span> Query speed-ups are shown for each query under the chosen solution.
+            </li>
+        </ul>
+
+        <p className='mt-3'>
+            Use the results to accept a solution and schedule migration, or rerun the search with adjusted settings.
+        </p>
+    </>);
 }
 
 type AdaptationSolutionColumnProps = {

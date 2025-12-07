@@ -13,6 +13,7 @@ import { DatasourceBadge } from '../datasource/DatasourceBadge';
 import { getEdgeSignature } from '../category/graph/categoryGraph';
 import { QueriesTable } from '../querying/QueriesTable';
 import { type Query } from '@/types/query';
+import { GoDotFill } from 'react-icons/go';
 
 type AdaptationSettingsPageProps = {
     category: Category;
@@ -117,12 +118,29 @@ export function AdaptationSettingsPage({ category, datasources, queries, updateQ
 
 function AdaptationSettingsInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Adaptation Input</h2>
+        <h2 className='text-lg font-semibold mb-2'>Adaptation Settings</h2>
         <p>
-            Configure the settings for adapting your schema category. You can review and adjust the datasources and mappings before proceeding to the adaptation results.
+            Configure how the advisor explores mapping alternatives. Choose algorithm parameters, select which datasources to consider, and tune per-query weights. The visualization lets you inspect entities and edge options.
         </p>
 
-        TODO
+        <ul className='mt-3 space-y-2'>
+            <li className='flex items-start gap-2'>
+                <GoDotFill className='text-primary-500' />
+                <span className='font-bold'>Parameters:</span> E.g., exploration weight for MCTS — affects search trade-off between exploring and exploiting.
+            </li>
+            <li className='flex items-start gap-2'>
+                <GoDotFill className='text-primary-500' />
+                <span className='font-bold'>Graph editing:</span> Click a node to set its default datasource; click an edge to allow reference/embedding/inlining.
+            </li>
+            <li className='flex items-start gap-2'>
+                <GoDotFill className='text-primary-500' />
+                <span className='font-bold'>Query weights:</span> By default, they are equal to execution counts, but you can override them here.
+            </li>
+        </ul>
+
+        <p className='mt-3'>
+            Save anytime. When ready, use <span className='font-bold'>Start</span> to launch a job that will run the optimization on the server.
+        </p>
     </>);
 }
 

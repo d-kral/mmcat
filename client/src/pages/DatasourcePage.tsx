@@ -283,7 +283,7 @@ function DatasourceDisplay() {
 function DatasourceDetailInfoInner() {
     return (<>
         <h2 className='text-lg font-semibold mb-2'>Managing a Data Source</h2>
-        <ul className='mt-2 text-sm space-y-2'>
+        <ul className='mt-2 space-y-2'>
             <li className='flex items-center gap-2'>
                 <GoDotFill className='text-primary-500' />
                 <span className='font-bold'>Edit:</span> You can update connection details, but the type cannot be changed.

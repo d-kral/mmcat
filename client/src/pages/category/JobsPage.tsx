@@ -200,11 +200,11 @@ export function JobInfoInner() {
 
     return (<>
         <h2 className='text-lg font-semibold mb-2'>Understanding Jobs & Runs</h2>
-        <p className='text-sm'>
+        <p>
             A <span className='font-bold'>Job</span> is a single execution of a transformation algorithm, while a <span className='font-bold'>Run</span> is a group of related Jobs processed together.
         </p>
 
-        <ul className='mt-3 text-sm space-y-2'>
+        <ul className='mt-3 space-y-2'>
             <li className='flex items-center gap-2'>
                 <GoDotFill className='text-primary-500' />
                 <span className='font-bold'>Job:</span> Executes a transformation (e.g., importing/exporting data).
@@ -219,13 +219,13 @@ export function JobInfoInner() {
             </li>
         </ul>
 
-        <p className='text-sm mt-3'>
+        <p className='mt-3'>
             Jobs run in order, and Runs help organize batch processing. Inspired by GitLab pipelines.
         </p>
 
         {/* Hint Section */}
         <h3 className='font-semibold mb-1 mt-4'>Next Steps</h3>
-        <ul className='space-y-1 text-sm'>
+        <ul className='space-y-1'>
             <li className='flex items-center gap-2'>
                 <GoDotFill className='text-primary-500' />
                 <span className='font-bold'>Manage Jobs:</span> Click a circle in the <em>Jobs</em> column of a Run or hover to see details.

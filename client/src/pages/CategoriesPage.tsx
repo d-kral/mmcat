@@ -248,12 +248,12 @@ export function CreateSchemaModal({ isOpen, onClose, onSubmit }: CreateSchemaMod
 export function SchemaCategoryInfoInner() {
     return (<>
         <h2 className='text-lg font-semibold mb-2'>Understanding Schema Categories</h2>
-        <p className='text-sm'>
+        <p>
             A <span className='font-bold'>Schema Category</span> represents the structure of your data at a high level.
             It is a <em>project</em>, grouping everything related to a specific conceptual schema.
             Within a Schema Category, you can manage the <em>Schema Category Graph</em> (add objects and morphisms), as well as <em>Mappings, Data Sources, Actions, Runs, and Jobs</em>.
         </p>
-        <ul className='mt-3 text-sm space-y-2'>
+        <ul className='mt-3 space-y-2'>
             <li className='flex items-center gap-2'>
                 <GoDotFill className='text-primary-500' />
                 <span className='font-bold'>Conceptual Schema:</span> Defines the data model without focusing on storage details.
@@ -267,7 +267,7 @@ export function SchemaCategoryInfoInner() {
                 <span className='font-bold'>Logical Model:</span> Defines how data is stored in tables, documents, or other structures.
             </li>
         </ul>
-        <p className='text-sm mt-3'>
+        <p className='mt-3'>
             Each Schema Category serves as a <em>workspace</em> where you define how data is structured and processed.
             Start by creating a <em>Graph</em> in editor, then create <em>Mappings</em> and execute <em>Jobs</em> to transform data.
         </p>

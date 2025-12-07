@@ -224,14 +224,13 @@ export function ActionInfoInner() {
     return (<>
         <h2 className='text-lg font-semibold mb-2'>Understanding Actions & Jobs</h2>
 
-        {/* Info Content */}
-        <p className='text-sm'>
+        <p>
             An <span className='font-bold'>Action</span> is something that <span className='font-bold'>spawns Jobs</span>.
             Think of it as a <span className='font-bold'>trigger</span> for executing transformations or data processing tasks.
             For example, if you want to <span className='font-bold'>export data to PostgreSQL</span>, you create an <span className='font-bold'>Action</span> to start the process.
         </p>
 
-        <ul className='mt-3 text-sm space-y-2'>
+        <ul className='mt-3 space-y-2'>
             <li className='flex items-center gap-2'>
                 <GoDotFill className='text-primary-500' />
                 <span className='font-bold'>Action:</span> Spawns jobs (e.g., exporting data to PostgreSQL).
@@ -246,7 +245,7 @@ export function ActionInfoInner() {
             </li>
         </ul>
 
-        <p className='text-sm mt-3'>
+        <p className='mt-3'>
             Inspired by GitLab, Jobs are queued and executed sequentially. Runs help group multiple executions together.
         </p>
     </>);
