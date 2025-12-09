@@ -11,7 +11,6 @@ import cz.matfyz.querying.core.QueryDescription;
 import cz.matfyz.querying.core.QueryExecution;
 import cz.matfyz.server.category.SchemaCategoryEntity;
 import cz.matfyz.server.category.SchemaCategoryRepository;
-import cz.matfyz.server.datasource.DatasourceEntity;
 import cz.matfyz.server.datasource.DatasourceRepository;
 import cz.matfyz.server.datasource.WrapperService;
 import cz.matfyz.server.evolution.EvolutionRepository;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,10 +102,15 @@ public class QueryService {
     }
 
     public Query create(QueryInit init) {
+        return create(init, null);
+    }
+
+    public Query create(QueryInit init, @Nullable QueryStats stats) {
         final var category = categoryRepository.find(init.categoryId());
 
         final var newVersion = category.systemVersion().generateNext();
         final var query = Query.createNew(newVersion, init.categoryId(), init.label(), init.content());
+        query.stats = stats;
         final var evolution = QueryEvolution.createNew(category.id(), newVersion, query.id(), init.content(), "", List.of());
 
         repository.save(query);

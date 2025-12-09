@@ -35,10 +35,10 @@ export function AdaptationPage() {
     }
 
     function startMockJob() {
-        setMockJob(mockAdaptationJob(undefined));
+        setMockJob(mockAdaptationJob(queries, undefined));
 
         jobIntervalRef.current = setInterval(() => {
-            setMockJob(prev => mockAdaptationJob(prev));
+            setMockJob(prev => mockAdaptationJob(queries, prev));
         }, 1000);
     }
 

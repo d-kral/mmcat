@@ -60,14 +60,14 @@ export function AdaptationJobPage({ adaptation, job, onNext, onNextMock }: Adapt
                             <div className='flex gap-x-8'>
                                 <div>
                                     <div className='font-medium'>Best solutions</div>
-                                    <div>Speed-up [<XMarkIcon className='inline size-4' />]:</div>
+                                    <div>Speed-up:</div>
                                     <div>Price [DB hits]:</div>
                                 </div>
 
                                 {job.solutions.map((solution, index) => (
                                     <div key={index} className='font-semibold text-end'>
                                         <div>#{index + 1}</div>
-                                        <div>{prettyPrintDouble(solution.speedup)}</div>
+                                        <div>{prettyPrintDouble(100 * solution.speedup) + ' %'}</div>
                                         <div>{prettyPrintDouble(solution.price)}</div>
                                     </div>
                                 ))}

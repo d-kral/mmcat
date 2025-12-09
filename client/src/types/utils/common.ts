@@ -193,6 +193,9 @@ export const timeQuantity = new QuantityClass(
     false,
 );
 
-export function plural(word: string, count: number): string {
-    return count === 1 ? word : `${word}s`;
+export function plural(count: number, singular: string, plural?: string): string {
+    if (count === 1)
+        return singular;
+
+    return plural ?? (singular + 's');
 }

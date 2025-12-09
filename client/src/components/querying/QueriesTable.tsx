@@ -86,7 +86,7 @@ export function QueriesTable({ queries, onUpdate, onDelete, itemsPerPage, soluti
                     <TableColumn key='version' allowsSorting align='end'>Version</TableColumn>,
                     <TableColumn key='weight' allowsSorting align='end'>Weight (<span className='italic'>normalized</span>)</TableColumn>,
                     ...(solution ? [
-                        <TableColumn key='speedup' allowsSorting align='end'>Speed-up [<XMarkIcon className='inline size-4' />]</TableColumn>,
+                        <TableColumn key='speedup' allowsSorting align='end'>Speed-up</TableColumn>,
                     ] : []),
                     <TableColumn key='actions' minWidth={88} align='end'><span className='mr-4'>Actions</span></TableColumn>,
                 ]}
@@ -110,7 +110,7 @@ export function QueriesTable({ queries, onUpdate, onDelete, itemsPerPage, soluti
                             </TableCell>,
                             ...(solution ? [
                                 <TableCell key='speedup'>
-                                    {prettyPrintDouble(solution.queries.get(query.id)?.speedup ?? 1)}
+                                    {prettyPrintDouble(100 * (solution.queries.get(query.id)?.speedup ?? 0)) + ' %'}
                                 </TableCell>,
                             ] : []),
                             <TableCell key='actions' className='p-0'>

@@ -72,7 +72,7 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
                 <div>
                     <div className='py-3 flex flex-col gap-1'>
                         <div className='h-5 font-semibold'>Id</div>
-                        <div className='h-5 font-semibold'>Speed-up [<XMarkIcon className='inline size-4' />]</div>
+                        <div className='h-5 font-semibold'>Speed-up</div>
                         <div className='h-5 font-semibold'>Price [DB hits]</div>
                     </div>
 
@@ -107,7 +107,7 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
             {excludedCount > 0 && (
                 <div className='flex items-center justify-center gap-2'>
                     <div className='italic'>
-                        {`${excludedCount} ${plural('kind', excludedCount)} was excluded from the adaptation.`}
+                        {`${excludedCount} ${plural(excludedCount, 'kind was', 'kinds were')} excluded from the adaptation.`}
                     </div>
 
                     <Button size='sm' variant='ghost' onPress={() => setIsShowExcluded(!isShowExcluded)}>
@@ -139,7 +139,7 @@ function AdaptationResultInfoInner() {
     return (<>
         <h2 className='text-lg font-semibold mb-2'>Results & Comparison</h2>
         <p>
-            Compare the recommended mappings side-by-side. Each column corresponds to a solution (except the first one, which shows the original state), showing per-kind mappings, estimated speed-up, and migration price.
+            Compare the recommended mappings side-by-side. Each column corresponds to a solution (except the first one, which shows the original state), showing per-kind mappings, estimated speed-up, and migration price. Speed-ups (-1, ∞) are relative to the original configuration.
         </p>
 
         <ul className='mt-3 space-y-2'>
@@ -181,8 +181,8 @@ function AdaptationSolutionColumn({ kinds, adaptation, solution, isSelected, onC
                 <CardBody className='flex flex-col items-end gap-1 font-semibold [&>*]:h-5'>
                     {solution ? (<>
                         <div>#{solution.id}</div>
+                        <div>{prettyPrintDouble(100 * solution.speedup) + ' %'}</div>
                         {/* TODO Maybe this should be int? */}
-                        <div>{prettyPrintDouble(solution.speedup)}</div>
                         <div>{prettyPrintDouble(solution.price)}</div>
                     </>) : (<>
                         <div>Original</div>

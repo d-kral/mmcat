@@ -118,7 +118,7 @@ export function adaptationResultFromResponse(input: AdaptationResultResponse, da
 
 type AdaptationSolutionResponse = {
     id: number;
-    /** Relative speedup (more is better). */
+    /** Relative speed-up (more is better). 0 means no speed-up, 1 means "two times as fast". */
     speedup: number;
     /** In DB hits (less is better). */
     price: number;
@@ -126,7 +126,7 @@ type AdaptationSolutionResponse = {
     queries: AdaptationQueryResponse[];
 };
 
-// Some properties of the solution aren't technically needed. E.g., prices and speedups can be measured by just running the queries with the new configuration.
+// Some properties of the solution aren't technically needed. E.g., prices and speed-ups can be measured by just running the queries with the new configuration.
 // However, they might be expensive to compute. Or, these might be just estimates (and our backend can't do that). So, it makes sense to include them in the solution.
 export type AdaptationSolution = {
     id: number;
@@ -173,34 +173,29 @@ export type AdaptationQuery = {
 
 /** @deprecated */
 export function mockAdaptationResultResponse(adaptation: Adaptation, datasources: Datasource[], queries: Query[]): AdaptationResultResponse {
-    const { postgres, mongo, neo4j } = getBasicDatasources(adaptation, datasources);
+    const { postgres, mongo } = getBasicDatasources(adaptation, datasources);
+
+    let prevJob: MockAdaptationJob | undefined;
+    while (lastBestSolutions.length < 3)
+        prevJob = mockAdaptationJob(queries, prevJob, 2000);
+
+    let i = 0;
 
     return {
         solutions: [
-            mockAdaptationSolutionResponse(adaptation, 42.37, {
-                [postgres.id]: [ 40, 50 ],
+            mockAdaptationSolutionResponse(adaptation, {
+                [postgres.id]: [ 30, 40, 50 ],
                 [mongo.id]: [ 70, 80 ],
-                [neo4j.id]: [ 30 ],
-            }, queries),
-            mockAdaptationSolutionResponse(adaptation, 55.91, {
-                [postgres.id]: [ 70 ],
-                [mongo.id]: [ 30, 40, 50 ],
-                [neo4j.id]: [ 80 ],
-            }, queries),
-            mockAdaptationSolutionResponse(adaptation, 63.31, {
-                // This should be the initial settings.
+            }, queries, lastBestSolutions[i++]),
+            mockAdaptationSolutionResponse(adaptation, {
                 [postgres.id]: [ 70, 80 ],
-                [neo4j.id]: [ 30, 40, 50 ],
-            }, queries),
+                [mongo.id]: [ 30, 40, 50 ],
+            }, queries, lastBestSolutions[i++]),
+            mockAdaptationSolutionResponse(adaptation, {
+                [postgres.id]: [ 30, 40, 50, 70, 80 ],
+            }, queries, lastBestSolutions[i++]),
         ]
-            .sort((a, b) => b.speedup - a.speedup)
-            .map((solution, index) => ({
-                ...solution,
-                id: index + 1,
-                // Remap to last best solutions for consistency.
-                speedup: lastBestSolutions[index]?.speedup ?? solution.speedup,
-                price: lastBestSolutions[index]?.price ?? solution.price,
-            })),
+            .map((solution, index) => ({ ...solution, id: index + 1 })),
     };
 }
 
@@ -224,7 +219,7 @@ function getBasicDatasources(adaptation: Adaptation, datasources: Datasource[]) 
     };
 }
 
-function mockAdaptationSolutionResponse(adaptation: Adaptation, price: number, datasourceToObjexes: Record<Id, number[]>, queries: Query[]): Omit<AdaptationSolutionResponse, 'id'> {
+function mockAdaptationSolutionResponse(adaptation: Adaptation, datasourceToObjexes: Record<Id, number[]>, queries: Query[], mockSolution: MockAdaptationJobSolution): Omit<AdaptationSolutionResponse, 'id'> {
     const objexes: AdaptationObjexResponse[] = [];
 
     for (const datasourceId in datasourceToObjexes) {
@@ -240,30 +235,15 @@ function mockAdaptationSolutionResponse(adaptation: Adaptation, price: number, d
 
     const adaptationQueries = queries.map(query => ({
         id: query.id,
-        speedup: getRandomQuerySpeedup(),
+        speedup: mockSolution.queries.get(query.id) ?? 0,
     }));
 
-
-    let totalWeight = 0;
-    let absoluteSpeedup = 0;
-
-    for (let i = 0; i < queries.length; i++) {
-        totalWeight += queries[i].finalWeight;
-        absoluteSpeedup += adaptationQueries[i].speedup * queries[i].finalWeight;
-    }
-
-    const speedup = absoluteSpeedup / totalWeight;
-
     return {
-        price,
-        speedup,
+        price: mockSolution.price,
+        speedup: mockSolution.speedup,
         objexes,
         queries: adaptationQueries,
     };
-}
-
-function getRandomQuerySpeedup(): number {
-    return 0.2 + Math.random() * 3.9;
 }
 
 /** @deprecated */
@@ -280,10 +260,11 @@ type MockAdaptationJobSolution = {
     // We probably don't need more (however we might in the real implementation).
     speedup: number;
     price: number;
+    queries: Map<Id, number>;
 };
 
 /** @deprecated */
-export function mockAdaptationJob(prev: MockAdaptationJob | undefined): MockAdaptationJob {
+export function mockAdaptationJob(queries: Query[], prev: MockAdaptationJob | undefined, deltaTimeInMs?: number): MockAdaptationJob {
     if (!prev) {
         return {
             id: v4(),
@@ -294,13 +275,14 @@ export function mockAdaptationJob(prev: MockAdaptationJob | undefined): MockAdap
         };
     }
 
-    const deltaTime = Date.now() - prev.createdAt.getTime();
+    const deltaTime = deltaTimeInMs ?? Date.now() - prev.createdAt.getTime();
     const processedStates = prev.processedStates + Math.round(30 + Math.random() * 96_000 / deltaTime);
 
     const generatedSolutionsCount = Math.ceil(processedStates / 30);
     const solutions = [
+        { speedup: 0, price: 0, queries: new Map(queries.map(q => [ q.id, 0 ])) }, // The initial solution.
         ...prev.solutions,
-        ... [ ...new Array(generatedSolutionsCount) ].map(() => mockAdaptationJobSolution(processedStates)),
+        ... [ ...new Array(generatedSolutionsCount) ].map(() => mockAdaptationJobSolution(queries, processedStates)),
     ]
         .sort((a, b) => {
             return prettyPrintDouble(a.speedup) === prettyPrintDouble(b.speedup)
@@ -320,10 +302,45 @@ export function mockAdaptationJob(prev: MockAdaptationJob | undefined): MockAdap
 
 let lastBestSolutions: MockAdaptationJobSolution[] = [];
 
-function mockAdaptationJobSolution(poolSize: number): MockAdaptationJobSolution {
+function mockAdaptationJobSolution(queries: Query[], poolSize: number): MockAdaptationJobSolution {
     const bonus = Math.max(0, Math.log(poolSize)) / 10;
+    // Speed-up has to be in (-1, ∞). Let's also choose a reasonable upper bound.
+    let speedup = -1.4 + Math.random() * (1.9 + bonus);
+    if (speedup < -1)
+        speedup = 1 / speedup;
+
+    const totalWeight = queries.reduce((ans, q) => ans + q.finalWeight, 0);
+
+    const querySpeedups = [ ...new Array(queries.length) ].map(getRandomQuerySpeedup);
+    // Now we have to make the query speedups match the overall speedup.
+    // Let's say each query Q_i takes time t_i originally and T_i after adaptation. This corresponds to velocities v_i = 1 / t_i and V_i = 1 / T_i.
+    // Speed-up of the query is s_i = (V_i - v_i) / v_i = V_i / v_i - 1 = t_i / T_i - 1
+    // The total speed-up is S + 1 = t / T = (sum t_i * w_i) / (sum T_i * w_i) = (sum w_i * t_i) / (sum w_i * t_i / (s_i + 1))
+    // So, we can't know the total speed-up without the original times t_i. And the original times are independent on the weights.
+    // However, it should still be consistent accross queries. So, let's use the query average execution times.
+    const times = queries.map(q => q.stats ? q.stats.evaluationTimeInMs.sum / q.stats.executionCount : 0);
+    const weightedTimes = times.map((t, index) => t * queries[index].finalWeight / totalWeight);
+
+    const currentSpeedup = weightedTimes.reduce((ans, t) => ans + t, 0) / weightedTimes.reduce((ans, t, index) => ans + t / (querySpeedups[index] + 1), 0) - 1;
+    // We want this value to be equal to the previously chosen speedup.
+    const adjustmentFactor = (speedup + 1) / (currentSpeedup + 1);
+
+    for (let i = 0; i < querySpeedups.length; i++)
+        querySpeedups[i] = (querySpeedups[i] + 1) * adjustmentFactor - 1;
+
+    const queriesMap = new Map<Id, number>();
+    for (let i = 0; i < queries.length; i++)
+        queriesMap.set(queries[i].id, querySpeedups[i]);
+
     return {
-        speedup: 0.2 + Math.random() * (3.1 + bonus),
+        speedup,
         price: 19 + Math.random() * 69,
+        queries: queriesMap,
     };
 }
+
+function getRandomQuerySpeedup(): number {
+    const speedup = -1.2 + Math.random() * 3.9;
+    return speedup > -1 ? speedup : 1 / speedup;
+}
+
