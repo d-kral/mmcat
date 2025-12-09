@@ -2,7 +2,7 @@ import { type ReactNode, type MouseEvent, type Dispatch, useCallback, useRef } f
 import { type GraphEvent, type GraphOptions } from '../graph/graphEngine';
 import { GraphProvider } from '../graph/GraphProvider';
 import { useCanvas, useEdge, useNode, useSelectionBox } from '../graph/graphHooks';
-import { EDGE_ARROW_LENGTH, getEdgeDegree, type Node } from '../graph/graphUtils';
+import { getEdgeDegree, type Node } from '../graph/graphUtils';
 import { cn } from '@/components/common/utils';
 import { type KindEdge, type KindNode, type KindGraph } from './kindGraph';
 import { DATASOURCE_MODELS } from '@/types/Datasource';
@@ -57,21 +57,6 @@ export function KindGraphDisplay({ graph, selection, dispatch, options, classNam
                 ))}
 
                 <svg fill='none' xmlns='http://www.w3.org/2000/svg' className='w-full h-full pointer-events-none select-none'>
-                    <defs>
-                        <marker
-                            id='arrow'
-                            viewBox='0 0 12 12'
-                            refX='0'
-                            refY='6'
-                            markerWidth={EDGE_ARROW_LENGTH}
-                            markerHeight={EDGE_ARROW_LENGTH}
-                            orient='auto-start-reverse'
-                            markerUnits='userSpaceOnUse'
-                        >
-                            <path d='M0 1 11 6 0 11z' stroke='context-stroke' fill='context-stroke' pointerEvents='auto' />
-                        </marker>
-                    </defs>
-
                     {graph.edges.bundledEdges.flatMap(bundle => bundle.map((edge, index) => (
                         <EdgeDisplay
                             key={edge.id}
@@ -214,9 +199,12 @@ function EdgeDisplay({ edge, degree, selection, onSelection }: EdgeDisplayProps)
             ref={setEdgeRef.path}
             onClick={onClick}
             d={svg.path}
-            stroke={isSelected ? 'hsl(var(--heroui-primary))' : 'hsl(var(--heroui-default-500))'}
-            strokeWidth='4'
-            className={isHoverAllowed ? 'cursor-pointer pointer-events-auto hover:drop-shadow-[0_0_4px_rgba(0,176,255,0.5)]' : undefined}
+            stroke='none'
+            fill='currentColor'
+            className={cn(
+                isSelected ? 'text-primary' : 'text-default-500',
+                isHoverAllowed && 'cursor-pointer pointer-events-auto hover:drop-shadow-[0_0_4px_rgba(0,176,255,0.5)]',
+            )}
             markerEnd='url(#arrow)'
         />
     );

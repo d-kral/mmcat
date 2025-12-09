@@ -3,7 +3,7 @@ import { type CategoryGraph, type CategoryEdge, type CategoryNode } from './cate
 import { type GraphMoveEvent, type GraphEvent, type GraphOptions } from '@/components/graph/graphEngine';
 import { GraphProvider } from '@/components/graph/GraphProvider';
 import { useCanvas, useEdge, useNode, useSelectionBox } from '@/components/graph/graphHooks';
-import { EDGE_ARROW_LENGTH, getEdgeDegree, type Node } from '@/components/graph/graphUtils';
+import { getEdgeDegree, type Node } from '@/components/graph/graphUtils';
 import { FreeSelection, type CategoryGraphSelection, PathCount, PathSelection, SequenceSelection, computePathToNode, computePathWithEdge } from '@/components/category/graph/selection';
 import { usePreferences } from '@/components/context/PreferencesProvider';
 import { cn } from '@/components/common/utils';
@@ -63,25 +63,7 @@ export function CategoryGraphDisplay({ graph, selection, dispatch, highlights, o
                     />
                 ))}
 
-                {/* SVG layer for rendering edges with arrow markers */}
                 <svg fill='none' xmlns='http://www.w3.org/2000/svg' className='w-full h-full pointer-events-none select-none'>
-                    <defs>
-                        {/* Define arrow marker for edge ends */}
-                        <marker
-                            id='arrow'
-                            viewBox='0 0 12 12'
-                            refX='0'
-                            refY='6'
-                            markerWidth={EDGE_ARROW_LENGTH}
-                            markerHeight={EDGE_ARROW_LENGTH}
-                            orient='auto-start-reverse'
-                            markerUnits='userSpaceOnUse'
-                        >
-                            <path d='M0 1 11 6 0 11z' stroke='context-stroke' fill='context-stroke' pointerEvents='auto' />
-                        </marker>
-                    </defs>
-
-                    {/* Render edges with arrow markers */}
                     {graph.edges.bundledEdges.flatMap(bundle => bundle.map((edge, index) => (
                         <EdgeDisplay
                             key={edge.id}
@@ -295,9 +277,10 @@ function EdgeDisplay({ edge, degree, selection, onSelection }: EdgeDisplayProps)
             ref={setEdgeRef.path}
             onClick={onClick}
             d={svg.path}
-            stroke={isSelected ? 'hsl(var(--heroui-primary))' : 'hsl(var(--heroui-default-500))'}
-            strokeWidth='4'
-            className={cn('text-zinc-600',
+            stroke='none'
+            fill='currentColor'
+            className={cn(
+                isSelected ? 'text-primary' : 'text-default-500',
                 isSelectionAllowed && [
                     isHoverAllowed && 'cursor-pointer pointer-events-auto hover:drop-shadow-[0_0_4px_rgba(0,176,255,0.5)]',
                     pathEdge && 'path-shadow-green',
