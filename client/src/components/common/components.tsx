@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useId, useLayoutEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useId, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { Button, type ButtonProps, Card, CardBody, Tooltip as HeroUITooltip, Spinner, type TooltipProps } from '@heroui/react';
 import { Link as ReactRouterLink, type LinkProps } from 'react-router-dom';
 import { createPortal } from 'react-dom';
@@ -129,16 +129,18 @@ export function SpinnerButton(props: BaseSpinnerButtonProps & { fetching: string
  * This component acts like a button that turns into a spinner whenewer isFetching === true.
  * The button is disabled, however its dimensions remain constant.
  */
-export function SpinnerButton({ isDisabled, isFetching, fetching, fid, isOverlay, style, icon, ...rest }: SpinnerButtonProps) {
+export function SpinnerButton({ isDisabled, isFetching, fetching, fid, isOverlay, style, icon, ref, ...rest }: SpinnerButtonProps) {
     const [ measurements, setMeasurements ] = useState<{ width?: number, height?: number }>({});
-    const contentRef = useRef<HTMLButtonElement>(null);
+
+    const innerRef = useRef<HTMLButtonElement>(null);
+    useImperativeHandle(ref, () => innerRef.current!, []);
 
     const doMeasurements = useCallback(() => {
-        if (!contentRef.current)
+        if (!innerRef?.current)
             return;
 
-        const newWidth = contentRef.current.getBoundingClientRect().width;
-        const newHeight = contentRef.current.getBoundingClientRect().height;
+        const newWidth = innerRef.current.getBoundingClientRect().width;
+        const newHeight = innerRef.current.getBoundingClientRect().height;
 
         setMeasurements(({ width, height }) => ({
             width: (!width || newWidth > width) ? newWidth : width,
@@ -160,7 +162,7 @@ export function SpinnerButton({ isDisabled, isFetching, fetching, fid, isOverlay
         <Button
             {...rest}
             isDisabled={finalIsDisabled}
-            ref={contentRef}
+            ref={innerRef}
             style={(isFetchingInner ? { ...measurements, ...style } : style)}
         >
             {isFetchingInner ? (

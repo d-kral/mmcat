@@ -5,7 +5,7 @@ import { nameFromResponse, StringName, type NameResponse } from '@/types/identif
 import type { SignatureIdResponse } from '@/types/identifiers/SignatureId';
 import type { AdminerReferenceKind, AdminerReferences } from '@/types/adminer/AdminerReferences';
 import type { AccessPathResponse, ComplexPropertyResponse, SimplePropertyResponse } from '@/types/mapping';
-import type { SchemaCategoryResponse } from '@/types/schema';
+import type { CategoryResponse } from '@/types/schema';
 import type { MappingResponse, MappingInit } from '@/types/mapping';
 import type { Id } from '@/types/id';
 
@@ -26,9 +26,9 @@ export function useFetchReferences(datasourceId?: Id, kindName?: string) {
             try {
                 if (datasourceId && kindName) {
                     const foreignKeys = await getForeignKeys(datasourceId, kindName);
-                    const schemaCategoryReferences = await getSchemaCategoryReferences(datasourceId, kindName);
+                    const categoryReferences = await getCategoryReferences(datasourceId, kindName);
 
-                    setReferences(foreignKeys.concat(schemaCategoryReferences));
+                    setReferences(foreignKeys.concat(categoryReferences));
                 }
             }
             catch (e) {
@@ -57,7 +57,7 @@ async function getForeignKeys(datasourceId: Id, kindName: string): Promise<Admin
     return foreignKeys;
 }
 
-async function getSchemaCategoryReferences(datasourceId: Id, kindName: string): Promise<AdminerReferences> {
+async function getCategoryReferences(datasourceId: Id, kindName: string): Promise<AdminerReferences> {
     const allMappings = await getAllMappings();
     const mappings: MappingInit[] = extractAllKindMappings(allMappings);
 
@@ -74,15 +74,15 @@ async function getSchemaCategoryReferences(datasourceId: Id, kindName: string): 
     const references: AdminerReferences = [];
     for (const kindMapping of kindMappings) {
         // Schema category that includes the given mapping of given kind
-        const schemaCategory = await getSchemaCategory(kindMapping.categoryId);
+        const category = await getCategory(kindMapping.categoryId);
 
         // All mappings in the given schema category
-        const schemaCategoryMappings = mappings.filter(mapping =>
-            mapping.categoryId === schemaCategory.id);
+        const categoryMappings = mappings.filter(mapping =>
+            mapping.categoryId === category.id);
 
         const mappingPathProperties = getPropertiesFromAccessPath(kindMapping.accessPath, new Set<SimplePropertyResponse>());
 
-        for (const mapping of schemaCategoryMappings)
+        for (const mapping of categoryMappings)
             addMappingReferences(references, primaryKeys, mapping, kindMapping, mappingPathProperties);
     }
 
@@ -224,13 +224,13 @@ function getAllPrimaryKeys(kindMappings: MappingInit[]): SignatureIdResponse {
     return primaryKeys;
 }
 
-async function getSchemaCategory(categoryId: Id): Promise<SchemaCategoryResponse> {
-    const schemaCategoryResponse = await api.schemas.getCategory({ id: categoryId });
+async function getCategory(categoryId: Id): Promise<CategoryResponse> {
+    const response = await api.schemas.getCategory({ id: categoryId });
 
-    if (!schemaCategoryResponse.status)
+    if (!response.status)
         throw new Error(`Failed to fetch schema categories`);
 
-    return schemaCategoryResponse.data;
+    return response.data;
 }
 
 /**

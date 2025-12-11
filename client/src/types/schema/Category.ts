@@ -12,15 +12,17 @@ import { ComparableMap } from '@/types/utils/ComparableMap';
 export class Category implements Entity {
     private constructor(
         readonly id: Id,
-        readonly label: string,
         readonly versionId: VersionId,
+        readonly example: string | undefined,
+        readonly label: string,
     ) {}
 
-    static fromResponse(input: SchemaCategoryResponse): Category {
+    static fromResponse(input: CategoryResponse): Category {
         const category = new Category(
             input.id,
-            input.label,
             input.version,
+            input.example ?? undefined,
+            input.label,
         );
 
         const objexMetadata = new Map<KeyResponse, MetadataObjexResponse>(
@@ -42,10 +44,6 @@ export class Category implements Entity {
         });
 
         return category;
-    }
-
-    static fromResponseWithInfo(info: SchemaCategoryInfo, schema: SerializedSchema, metadata: SerializedMetadata): Category {
-        return this.fromResponse({ ...info, version: info.versionId, systemVersion: info.systemVersionId, schema, metadata });
     }
 
     private keyProvider = new UniqueIdProvider<Key>({
@@ -97,7 +95,7 @@ export class Category implements Entity {
     }
 }
 
-export type SchemaCategoryResponse = SchemaCategoryInfoResponse & {
+export type CategoryResponse = CategoryInfoResponse & {
     schema: SerializedSchema;
     metadata: SerializedMetadata;
 };
@@ -112,37 +110,48 @@ export type SerializedMetadata = {
     morphisms: MetadataMorphismResponse[];
 };
 
-export type SchemaCategoryInfoResponse = {
+export type CategoryInfoResponse = {
     id: Id;
-    label: string;
     version: VersionId;
     systemVersion: VersionId;
+    example: string | null;
+    label: string;
 };
 
-export class SchemaCategoryInfo implements Entity {
+export class CategoryInfo implements Entity {
     private constructor(
         readonly id: Id,
-        readonly label: string,
         readonly versionId: VersionId,
         readonly systemVersionId: VersionId,
+        readonly example: string | undefined,
+        readonly label: string,
     ) {}
 
-    static fromResponse(input: SchemaCategoryInfoResponse): SchemaCategoryInfo {
-        return new SchemaCategoryInfo(
+    static fromResponse(input: CategoryInfoResponse): CategoryInfo {
+        return new CategoryInfo(
             input.id,
-            input.label,
             input.version,
             input.systemVersion,
+            input.example ?? undefined,
+            input.label,
         );
     }
 }
 
-export type SchemaCategoryInit = {
+export type CategoryInit = {
     label: string;
 };
 
-export type SchemaCategoryStats = {
+export type CategoryStats = {
     objexes: number;
     mappings: number;
     jobs: number;
 };
+
+export enum Example {
+    basic = 'basic',
+    adminer = 'adminer',
+    queryEvolution = 'query-evolution',
+    inference = 'inference',
+    adaptation = 'adaptation',
+}

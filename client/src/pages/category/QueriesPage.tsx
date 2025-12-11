@@ -37,9 +37,8 @@ export function QueriesPage() {
                     as={Link}
                     to={routes.category.queries.new.resolve({ categoryId: category.id })}
                     color='primary'
-                    startContent={<FaPlus className='size-4' />}
                 >
-                    Add Query
+                    <FaPlus className='size-4' /> Add Query
                 </Button>
             </div>
 
@@ -53,8 +52,7 @@ export function QueriesPage() {
             ) : (
                 <EmptyState
                     message='No queries available. Create one to get started.'
-                    buttonText='Start Quering'
-                    buttonStartContent={<FaPlus className='size-4' />}
+                    button={<><FaPlus className='size-4' /> Start Quering</>}
                     to={routes.category.queries.new.resolve({ categoryId: category.id })}
                 />
             )}

@@ -87,9 +87,8 @@ export function DatasourcesInCategoryPage() {
                     onPress={() => setIsModalOpen(true)}
                     color='primary'
                     variant='flat'
-                    startContent={<FaPlus className='size-4' />}
                 >
-                    Add Datasource
+                    <FaPlus className='size-4' /> Add Datasource
                 </Button>
             </div>
 
@@ -103,8 +102,7 @@ export function DatasourcesInCategoryPage() {
                 ) : (
                     <EmptyState
                         message='No other datasources available.'
-                        buttonText='Add Datasource'
-                        buttonStartContent={<FaPlus className='size-4' />}
+                        button={<><FaPlus className='size-4' /> Add Datasource</>}
                         onClick={() => setIsModalOpen(true)}
                     />
                 )}
@@ -150,7 +148,7 @@ DatasourcesInCategoryPage.loader = async ({ params: { categoryId } }: { params: 
     };
 };
 
-export function MappingInfoInner() {
+function MappingInfoInner() {
     return (<>
         <h2>Understanding Mapping & Data Sources</h2>
 

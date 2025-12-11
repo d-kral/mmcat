@@ -1,6 +1,6 @@
 import { Outlet, type Params, useLoaderData } from 'react-router-dom';
 import { api } from '@/api';
-import { SchemaCategoryInfo } from '@/types/schema';
+import { CategoryInfo } from '@/types/schema';
 import { CategoryInfoProvider } from '@/components/context/CategoryInfoProvider';
 import { SessionSelect } from '@/components/context/SessionSelect';
 
@@ -23,7 +23,7 @@ export function CategoryPage() {
 }
 
 export type CategoryLoaderData = {
-    category: SchemaCategoryInfo;
+    category: CategoryInfo;
 };
 
 CategoryPage.loader = async ({ params: { categoryId } }: { params: Params<'categoryId'> }) => {
@@ -35,7 +35,7 @@ CategoryPage.loader = async ({ params: { categoryId } }: { params: Params<'categ
             if (!response.status)
                 throw new Error('Failed to load category info');
 
-            return SchemaCategoryInfo.fromResponse(response.data);
+            return CategoryInfo.fromResponse(response.data);
         }),
     };
 };

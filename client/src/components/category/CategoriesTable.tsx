@@ -1,6 +1,6 @@
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, Button } from '@heroui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import type { SchemaCategoryInfo } from '@/types/schema';
+import type { CategoryInfo } from '@/types/schema';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '../context/PreferencesProvider';
 import { ConfirmationModal } from '../common/tableComponents';
@@ -12,15 +12,15 @@ import { toast } from 'react-toastify';
 import { type Id } from '@/types/id';
 import { useCached } from '../hooks/useCached';
 
-type SchemaCategoriesTableProps = {
-    categories: SchemaCategoryInfo[];
+type CategoriesTableProps = {
+    categories: CategoryInfo[];
     onDeleteCategory: (id: Id) => void;
 };
 
-export function SchemaCategoriesTable({ categories, onDeleteCategory }: SchemaCategoriesTableProps) {
+export function CategoriesTable({ categories, onDeleteCategory }: CategoriesTableProps) {
     const { showTableIDs } = usePreferences().preferences;
 
-    const [ toDelete, setToDelete ] = useState<SchemaCategoryInfo>();
+    const [ toDelete, setToDelete ] = useState<CategoryInfo>();
     const toDeleteCache = useCached(toDelete);
     const [ isFetching, setIsFetching ] = useState<boolean>(false);
 

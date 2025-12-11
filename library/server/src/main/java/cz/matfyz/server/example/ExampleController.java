@@ -37,18 +37,26 @@ public class ExampleController {
     @PostMapping("/example-schema/{name}")
     public SchemaCategoryInfo createExampleCategory(@PathVariable String name) {
         final SchemaCategoryEntity categoryEntity = switch (name) {
-            case "basic" -> basicExampleSetup.setup();
-            case "adminer" -> adminerExampleSetup.setup();
-            case "query-evolution-1" -> queryEvolutionExampleSetup.setup(1);
-            case "query-evolution-2" -> queryEvolutionExampleSetup.setup(2);
-            case "query-evolution-3" -> queryEvolutionExampleSetup.setup(3);
-            case "query-evolution-4" -> queryEvolutionExampleSetup.setup(4);
-            case "inference" -> inferenceExampleSetup.setup();
-            case "adaptation" -> adaptationExampleSetup.setup();
+            case Example.basic -> basicExampleSetup.setup();
+            case Example.adminer -> adminerExampleSetup.setup();
+            case Example.queryEvolution + ":1" -> queryEvolutionExampleSetup.setup(1);
+            case Example.queryEvolution + ":2" -> queryEvolutionExampleSetup.setup(2);
+            case Example.queryEvolution + ":3" -> queryEvolutionExampleSetup.setup(3);
+            case Example.queryEvolution + ":4" -> queryEvolutionExampleSetup.setup(4);
+            case Example.inference -> inferenceExampleSetup.setup();
+            case Example.adaptation -> adaptationExampleSetup.setup();
             default -> throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         };
 
         return SchemaCategoryInfo.fromEntity(categoryEntity);
+    }
+
+    public interface Example {
+        public final String basic = "basic";
+        public final String adminer = "adminer";
+        public final String queryEvolution = "query-evolution";
+        public final String inference = "inference";
+        public final String adaptation = "adaptation";
     }
 
 }

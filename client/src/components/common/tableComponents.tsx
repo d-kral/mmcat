@@ -42,9 +42,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, isFetching, titl
 
 type EmptyStateProps = {
     message: string;
-    buttonText: string;
-    className?: string;
-    buttonStartContent?: ReactNode;
+    button: ReactNode;
     buttonClassName?: string;
 } & ({
     to: string;
@@ -55,19 +53,19 @@ type EmptyStateProps = {
 /**
  * A placeholder for empty states in tables.
  */
-export function EmptyState({ message, buttonText, buttonClassName, buttonStartContent, ...action }: EmptyStateProps) {
+export function EmptyState({ message, button, buttonClassName, ...action }: EmptyStateProps) {
     return (
         <div className='text-center border-2 border-dashed border-default-200 p-12 rounded-xl'>
             <p className='text-lg mb-4'>{message}</p>
 
             {'to' in action ? (
-                <Button as={Link} to={action.to} className={cn('px-4 py-2', buttonClassName)} startContent={buttonStartContent}>
-                    {buttonText}
+                <Button as={Link} to={action.to} className={cn('px-4 py-2', buttonClassName)}>
+                    {button}
                 </Button>
             ) : (
                 <span>
-                    <Button onPress={action.onClick} className={cn('px-4 py-2', buttonClassName)} startContent={buttonStartContent}>
-                        {buttonText}
+                    <Button onPress={action.onClick} className={cn('px-4 py-2', buttonClassName)}>
+                        {button}
                     </Button>
                 </span>
             )}

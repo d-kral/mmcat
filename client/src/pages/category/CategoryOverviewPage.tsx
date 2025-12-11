@@ -3,7 +3,7 @@ import { Button } from '@heroui/react';
 import { Link, useLoaderData, type Params } from 'react-router-dom';
 import { useCategoryInfo } from '@/components/context/CategoryInfoProvider';
 import { api } from '@/api';
-import { type SchemaCategoryStats } from '@/types/schema';
+import { type CategoryStats } from '@/types/schema';
 import { routes } from '@/routes/routes';
 import { FaDatabase, FaPlus, FaPlay, FaSearch, FaEdit } from 'react-icons/fa';
 import { type ReactNode } from 'react';
@@ -98,7 +98,7 @@ export function CategoryOverviewPage() {
 }
 
 type CategoryLoaderData = {
-    stats: SchemaCategoryStats;
+    stats: CategoryStats;
 };
 
 CategoryOverviewPage.loader = async ({ params: { categoryId } }: { params: Params<'categoryId'> }): Promise<CategoryLoaderData> => {

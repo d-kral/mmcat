@@ -4,6 +4,7 @@ import cz.matfyz.server.category.SchemaCategoryEntity;
 import cz.matfyz.server.category.SchemaCategoryService;
 import cz.matfyz.server.datasource.DatasourceEntity;
 import cz.matfyz.server.datasource.DatasourceService;
+import cz.matfyz.server.example.ExampleController.Example;
 import cz.matfyz.server.example.common.DatasourceBuilder;
 import cz.matfyz.server.inference.InferencePayload;
 import cz.matfyz.server.job.Action;
@@ -40,7 +41,7 @@ public class ExampleSetup {
     private SchemaCategoryService schemaService;
 
     private SchemaCategoryEntity createEmptySchemaCategory() {
-        return schemaService.create("Inference Example Schema");
+        return schemaService.create(Example.inference, "Inference Example Schema");
     }
 
     @Autowired

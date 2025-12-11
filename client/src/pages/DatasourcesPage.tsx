@@ -47,12 +47,8 @@ export function DatasourcesPage() {
                     <InfoTooltip {...banner} />
                 </div>
 
-                <Button
-                    onPress={() => setIsModalOpen(true)}
-                    color='primary'
-                    startContent={<FaPlus className='size-4' />}
-                >
-                    Add Datasource
+                <Button color='primary' onPress={() => setIsModalOpen(true)}>
+                    <FaPlus className='size-4' /> Add Datasource
                 </Button>
             </div>
 
@@ -70,8 +66,7 @@ export function DatasourcesPage() {
             ) : (
                 <EmptyState
                     message='No datasources available. Create one to get started.'
-                    buttonText='Add Datasource'
-                    buttonStartContent={<FaPlus className='size-4' />}
+                    button={<><FaPlus className='size-4' /> Add Datasource</>}
                     onClick={() => setIsModalOpen(true)}
                 />
             )}

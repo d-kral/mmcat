@@ -6,7 +6,7 @@ import { Button } from '@heroui/react';
 import { useCategoryInfo } from '@/components/context/CategoryInfoProvider';
 import { routes } from '@/routes/routes';
 import { toast } from 'react-toastify';
-import { type SchemaCategoryInfo } from '@/types/schema';
+import { type CategoryInfo } from '@/types/schema';
 import { LoadingPage, ReloadPage } from '../errorPages';
 import { cn } from '@/components/common/utils';
 import { PlayCircleIcon } from '@heroicons/react/24/outline';
@@ -118,7 +118,7 @@ export function JobPage() {
     );
 }
 
-function JobStateButton({ job, setJob, category, className }: { job: Job, setJob: Dispatch<Job>, category: SchemaCategoryInfo, className?: string }) {
+function JobStateButton({ job, setJob, category, className }: { job: Job, setJob: Dispatch<Job>, category: CategoryInfo, className?: string }) {
     const navigate = useNavigate();
 
     async function enableJob() {

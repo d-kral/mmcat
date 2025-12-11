@@ -8,6 +8,7 @@ import cz.matfyz.server.category.SchemaCategoryService;
 import cz.matfyz.server.category.SchemaCategoryService.SchemaEvolutionInit;
 import cz.matfyz.server.datasource.DatasourceEntity;
 import cz.matfyz.server.datasource.DatasourceService;
+import cz.matfyz.server.example.ExampleController.Example;
 import cz.matfyz.server.example.common.DatasourceBuilder;
 import cz.matfyz.server.example.common.MappingEntityBuilder;
 import cz.matfyz.tests.example.adminer.MongoDB;
@@ -35,7 +36,7 @@ public class ExampleSetup {
     private SchemaCategoryService schemaService;
 
     private SchemaCategoryEntity createSchemaCategory() {
-        final SchemaCategoryEntity schemaEntity = schemaService.create(Schema.schemaLabel);
+        final SchemaCategoryEntity schemaEntity = schemaService.create(Example.adminer, Schema.schemaLabel);
 
         final SchemaEvolutionInit schemaUpdate = SchemaSetup.createNewUpdate(schemaEntity);
 

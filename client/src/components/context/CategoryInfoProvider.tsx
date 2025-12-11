@@ -1,9 +1,9 @@
-import { type SchemaCategoryInfo } from '@/types/schema';
+import { type CategoryInfo } from '@/types/schema';
 import { createContext, type ReactNode, useContext, useState } from 'react';
 
 type CategoryInfoContext = {
-    category: SchemaCategoryInfo;
-    setCategory: (category: SchemaCategoryInfo) => void;
+    category: CategoryInfo;
+    setCategory: (category: CategoryInfo) => void;
 };
 
 /**
@@ -13,7 +13,7 @@ export const CategoryInfoContext = createContext<CategoryInfoContext | undefined
 
 type CategoryInfoProviderProps = {
     children: ReactNode;
-    category: SchemaCategoryInfo;
+    category: CategoryInfo;
 };
 
 /**

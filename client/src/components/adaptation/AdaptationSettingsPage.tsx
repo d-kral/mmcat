@@ -1,5 +1,5 @@
 import { PageLayout } from '@/components/RootLayout';
-import { DatasourceType, type Datasource } from '@/types/Datasource';
+import { type Datasource } from '@/types/Datasource';
 import { type Category } from '@/types/schema';
 import { type Dispatch, useMemo } from 'react';
 import { type AdaptationMorphism, type Adaptation } from './adaptation';
@@ -9,8 +9,6 @@ import { useBannerState } from '@/types/utils/useBannerState';
 import { type Job } from '@/types/job';
 import { KindGraphDisplay } from './KindGraphDisplay';
 import { type AdaptationSettingsDispatch, type AdaptationSettingsState, useAdaptationSettings } from './useAdaptationSettings';
-import { DatasourceBadge } from '../datasource/DatasourceBadge';
-import { getEdgeSignature } from '../category/graph/categoryGraph';
 import { QueriesTable } from '../querying/QueriesTable';
 import { type Query } from '@/types/query';
 import { dataSizeQuantity, prettyPrintInt } from '@/types/utils/common';
@@ -118,32 +116,6 @@ export function AdaptationSettingsPage({ category, datasources, queries, updateQ
             </div>
         </PageLayout>
     );
-}
-
-function AdaptationSettingsInfoInner() {
-    return (<>
-        <h2>Adaptation Settings</h2>
-
-        <p>
-            Configure how the advisor explores mapping alternatives. Choose algorithm parameters, select which datasources to consider, and tune per-query weights. The visualization lets you inspect entities and edge options.
-        </p>
-
-        <ul>
-            <li>
-                <span className='font-bold'>Parameters:</span> E.g., exploration weight for MCTS — affects search trade-off between exploring and exploiting.
-            </li>
-            <li>
-                <span className='font-bold'>Graph editing:</span> Click a node to set its default datasource; click an edge to allow reference/embedding/inlining.
-            </li>
-            <li>
-                <span className='font-bold'>Query weights:</span> By default, they are equal to execution counts, but you can override them here.
-            </li>
-        </ul>
-
-        <p>
-            Save anytime. When ready, use <span className='font-bold'>Start</span> to launch a job that will run the optimization on the server.
-        </p>
-    </>);
 }
 
 type StateDispatchProps = {
@@ -298,5 +270,31 @@ function EdgeEditor({ state, dispatch }: StateDispatchProps) {
         <Checkbox isSelected={edge?.isInliningAllowed ?? false} onValueChange={value => setMorphism({ isInliningAllowed: value })} isDisabled={!edge}>
             Inlining
         </Checkbox>
+    </>);
+}
+
+function AdaptationSettingsInfoInner() {
+    return (<>
+        <h2>Adaptation Settings</h2>
+
+        <p>
+            Configure how the advisor explores mapping alternatives. Choose algorithm parameters, select which datasources to consider, and tune per-query weights. The visualization lets you inspect entities and edge options.
+        </p>
+
+        <ul>
+            <li>
+                <span className='font-bold'>Parameters:</span> E.g., exploration weight for MCTS — affects search trade-off between exploring and exploiting.
+            </li>
+            <li>
+                <span className='font-bold'>Graph editing:</span> Click a node to set its default datasource; click an edge to allow reference/embedding/inlining.
+            </li>
+            <li>
+                <span className='font-bold'>Query weights:</span> By default, they are equal to execution counts, but you can override them here.
+            </li>
+        </ul>
+
+        <p>
+            Save anytime. When ready, use <span className='font-bold'>Start</span> to launch a job that will run the optimization on the server.
+        </p>
     </>);
 }

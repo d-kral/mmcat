@@ -17,6 +17,7 @@ import cz.matfyz.server.evolution.EvolutionRepository;
 import cz.matfyz.server.evolution.SchemaEvolution;
 import cz.matfyz.server.evolution.SchemaEvolutionPayload;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,12 +39,12 @@ public class SchemaCategoryService {
     @Autowired
     private JobService jobService;
 
-    public SchemaCategoryEntity create(String label) {
+    public SchemaCategoryEntity create(@Nullable String example, String label) {
         final String finalLabel = findUniqueLabel(label);
 
         final var schema = new SchemaCategory();
         final var metadata = MetadataCategory.createEmpty(schema);
-        final var entity = SchemaCategoryEntity.createNew(finalLabel, schema, metadata);
+        final var entity = SchemaCategoryEntity.createNew(example, finalLabel, schema, metadata);
 
         repository.save(entity);
         final var session = jobService.createSession(entity.id());

@@ -57,9 +57,8 @@ export function DatasourceInCategoryPage() {
                             as={Link}
                             to={routes.category.datasources.newMapping.resolve({ categoryId: category.id, datasourceId: datasource.id })}
                             color='primary'
-                            startContent={<FaPlus className='size-4' />}
                         >
-                            Add Mapping
+                            <FaPlus className='size-4' /> Add Mapping
                         </Button>
                     )}
                 </div>
@@ -69,8 +68,7 @@ export function DatasourceInCategoryPage() {
                 ) : (
                     <EmptyState
                         message='This datasource does not have a mapping yet.'
-                        buttonText='Add Mapping'
-                        buttonStartContent={<FaPlus className='size-4' />}
+                        button={<><FaPlus className='size-4' /> Add Mapping</>}
                         to={routes.category.datasources.newMapping.resolve({ categoryId: category.id, datasourceId: datasource.id })}
                     />
                 )}

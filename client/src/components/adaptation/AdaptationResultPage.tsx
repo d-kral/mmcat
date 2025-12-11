@@ -144,32 +144,6 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
     );
 }
 
-function AdaptationResultInfoInner() {
-    return (<>
-        <h2>Results & Comparison</h2>
-
-        <p>
-            Compare the recommended mappings side-by-side. Each column corresponds to a solution (except the first one, which shows the original state), showing per-kind mappings, estimated speed-up, and migration price. Speed-ups (-1, ∞) are relative to the original configuration.
-        </p>
-
-        <ul>
-            <li>
-                <span className='font-bold'>Table view:</span> Click a solution column to inspect it in the graph and query table.
-            </li>
-            <li>
-                <span className='font-bold'>Graph view:</span> Shows which kinds are mapped to which datasources for the selected solution.
-            </li>
-            <li>
-                <span className='font-bold'>Query table:</span> Query speed-ups are shown for each query under the chosen solution.
-            </li>
-        </ul>
-
-        <p>
-            Use the results to accept a solution and schedule migration, or rerun the search with adjusted settings.
-        </p>
-    </>);
-}
-
 type AdaptationSolutionColumnProps = {
     /** Sorted objexes that should be displayed. */
     kinds: Objex[];
@@ -293,4 +267,30 @@ function AdaptationSolutionGraph({ category, adaptation, solution }: AdaptationS
             </Card>
         </div>
     );
+}
+
+function AdaptationResultInfoInner() {
+    return (<>
+        <h2>Results & Comparison</h2>
+
+        <p>
+            Compare the recommended mappings side-by-side. Each column corresponds to a solution (except the first one, which shows the original state), showing per-kind mappings, estimated speed-up, and migration price. Speed-ups (-1, ∞) are relative to the original configuration.
+        </p>
+
+        <ul>
+            <li>
+                <span className='font-bold'>Table view:</span> Click a solution column to inspect it in the graph and query table.
+            </li>
+            <li>
+                <span className='font-bold'>Graph view:</span> Shows which kinds are mapped to which datasources for the selected solution.
+            </li>
+            <li>
+                <span className='font-bold'>Query table:</span> Query speed-ups are shown for each query under the chosen solution.
+            </li>
+        </ul>
+
+        <p>
+            Use the results to accept a solution and schedule migration, or rerun the search with adjusted settings.
+        </p>
+    </>);
 }

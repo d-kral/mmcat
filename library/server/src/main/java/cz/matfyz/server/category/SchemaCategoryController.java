@@ -7,6 +7,7 @@ import cz.matfyz.server.utils.entity.Id;
 
 import java.util.List;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +29,14 @@ public class SchemaCategoryController {
         Id id,
         Version version,
         Version lastValid,
-        String label,
+        @Nullable String example,
         /** The current version of the whole project. */
-        Version systemVersion
+        Version systemVersion,
+        String label
     ) implements IEntity {
 
-        public static SchemaCategoryInfo fromEntity(SchemaCategoryEntity categoryEntity) {
-            return new SchemaCategoryInfo(categoryEntity.id(), categoryEntity.version(), categoryEntity.lastValid(), categoryEntity.label, categoryEntity.systemVersion());
+        public static SchemaCategoryInfo fromEntity(SchemaCategoryEntity entity) {
+            return new SchemaCategoryInfo(entity.id(), entity.version(), entity.lastValid(), entity.example, entity.systemVersion(), entity.label);
         }
 
     }
@@ -50,7 +52,7 @@ public class SchemaCategoryController {
 
     @PostMapping("/schema-categories")
     public SchemaCategoryInfo createNewCategory(@RequestBody SchemaCategoryInit init) {
-        return SchemaCategoryInfo.fromEntity(service.create(init.label));
+        return SchemaCategoryInfo.fromEntity(service.create(null, init.label));
     }
 
     @GetMapping("/schema-categories/{id}/info")

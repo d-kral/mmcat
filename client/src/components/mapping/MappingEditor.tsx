@@ -85,10 +85,9 @@ export function MappingEditor({ category, input, onSave, onCancel }: MappingEdit
                                 color='danger'
                                 variant='flat'
                                 onPress={onCancel}
-                                startContent={<XMarkIcon className='size-4' />}
                                 size='sm'
                             >
-                                Discard
+                                <XMarkIcon className='size-4' /> Discard
                             </Button>
                         )}
 
@@ -96,12 +95,11 @@ export function MappingEditor({ category, input, onSave, onCancel }: MappingEdit
                             color='success'
                             variant='solid'
                             onPress={() => dispatch({ type: 'sync' })}
-                            startContent={<CheckCircleIcon className='size-4' />}
                             size='sm'
                             isDisabled={!state.form.rootObjexKey}
                             isFetching={isFetching}
                         >
-                            {input.mapping ? 'Save Mapping' : 'Create Mapping'}
+                            <CheckCircleIcon className='size-4' /> {input.mapping ? 'Save Mapping' : 'Create Mapping'}
                         </SpinnerButton>
                     </div>
                 </div>

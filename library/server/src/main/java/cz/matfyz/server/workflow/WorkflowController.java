@@ -44,7 +44,7 @@ public class WorkflowController {
 
     @PostMapping("/workflows")
     public Workflow createWorkflow(@RequestBody WorkflowInit init) {
-        final var category = schemaService.create(init.label);
+        final var category = schemaService.create(null, init.label);
         final var data = WorkflowData.createNew(init.type);
         final var workflow = Workflow.createNew(category.id(), init.label, data);
 

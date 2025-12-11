@@ -27,8 +27,9 @@ CREATE TABLE schema_category (
     id UUID PRIMARY KEY,
     version VARCHAR(255) NOT NULL,
     last_valid VARCHAR(255) NOT NULL,
-    label VARCHAR(255) NOT NULL,
+    example VARCHAR(255),
     system_version VARCHAR(255) NOT NULL,
+    label VARCHAR(255) NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     json_value JSONB NOT NULL
 );

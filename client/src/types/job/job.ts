@@ -1,6 +1,6 @@
 import { type JobPayload, jobPayloadFromResponse, type JobPayloadResponse, type JobPayloadInit } from './payload';
 import type { Entity, Id } from '../id';
-import type { SchemaCategoryInfo } from '../schema';
+import type { CategoryInfo } from '../schema';
 
 type JobInfoResponse = {
     id: Id;
@@ -85,7 +85,7 @@ export class Job implements Entity {
         readonly actionId: Id | undefined,
     ) {}
 
-    static fromResponse(input: JobResponse, info: SchemaCategoryInfo): Job {
+    static fromResponse(input: JobResponse, info: CategoryInfo): Job {
         return new Job(
             input.id,
             input.index,
@@ -130,7 +130,7 @@ type JobDataResponse = TransformationJobData;
 
 type JobData = TransformationJobData;
 
-function jobDataFromResponse(input: JobDataResponse, info: SchemaCategoryInfo): JobData {
+function jobDataFromResponse(input: JobDataResponse, info: CategoryInfo): JobData {
     console.log('Job data from server', info);
     switch (input.type) {
     case JobDataType.Transformation:

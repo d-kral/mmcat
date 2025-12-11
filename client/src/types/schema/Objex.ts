@@ -1,7 +1,7 @@
 import { Key, ObjexIds, type Signature, type KeyResponse, type ObjexIdsResponse } from '../identifiers';
 import { ComparableMap } from '../utils/ComparableMap';
 import { type Category } from './Category';
-import { SchemaCategoryInvalidError } from './Error';
+import { CategoryInvalidError } from './Error';
 import { type Morphism } from './Morphism';
 
 /**
@@ -98,7 +98,7 @@ export class SchemaObjex {
 
     get idsChecked(): ObjexIds {
         if (!this.ids)
-            throw new SchemaCategoryInvalidError(`Objex: ${this.key.toString()} doesn't have ids.`);
+            throw new CategoryInvalidError(`Objex: ${this.key.toString()} doesn't have ids.`);
 
         return this.ids;
     }

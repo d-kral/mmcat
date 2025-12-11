@@ -111,10 +111,9 @@ function DefaultDisplay({ state, dispatch }: StateDispatchProps) {
                         fullWidth
                         onPress={() => handleSave()}
                         isFetching={isSaving}
-                        startContent={isSaving ? null : <FaSave className='size-3.5' />}
                         className='shadow-xs hover:shadow-md transition-shadow'
                     >
-                        {isSaving ? 'Saving...' : 'Save Changes'}
+                        <FaSave className='size-3.5' /> Save Changes
                     </SpinnerButton>
                 </div>
             </div>

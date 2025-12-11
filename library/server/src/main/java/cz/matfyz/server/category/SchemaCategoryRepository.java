@@ -12,6 +12,7 @@ import java.util.List;
 
 import static cz.matfyz.server.utils.Utils.*;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,10 +26,11 @@ public class SchemaCategoryRepository {
         final Id id = getId(resultSet, "id");
         final Version version = Version.fromString(resultSet.getString("version"));
         final Version lastValid = Version.fromString(resultSet.getString("last_valid"));
-        final String label = resultSet.getString("label");
+        final @Nullable String example = resultSet.getString("example");
         final Version systemVersion = Version.fromString(resultSet.getString("system_version"));
+        final String label = resultSet.getString("label");
 
-        return new SchemaCategoryInfo(id, version, lastValid, label, systemVersion);
+        return new SchemaCategoryInfo(id, version, lastValid, example, systemVersion, label);
     }
 
     public List<SchemaCategoryInfo> findAllInfos() {
@@ -39,8 +41,9 @@ public class SchemaCategoryRepository {
                     id,
                     version,
                     last_valid,
-                    label,
-                    system_version
+                    example,
+                    system_version,
+                    label
                 FROM schema_category
                 ORDER BY updated_at DESC;
                 """);
@@ -57,8 +60,9 @@ public class SchemaCategoryRepository {
                     id,
                     version,
                     last_valid,
-                    label,
-                    system_version
+                    example,
+                    system_version,
+                    label
                 FROM schema_category
                 WHERE id = ?;
                 """);
@@ -76,8 +80,9 @@ public class SchemaCategoryRepository {
                 SELECT
                     version,
                     last_valid,
-                    label,
+                    example,
                     system_version,
+                    label,
                     json_value
                 FROM schema_category
                 WHERE id = ?;
@@ -88,10 +93,11 @@ public class SchemaCategoryRepository {
             if (resultSet.next()) {
                 final var version = Version.fromString(resultSet.getString("version"));
                 final var lastValid = Version.fromString(resultSet.getString("last_valid"));
-                final var label = resultSet.getString("label");
+                final var example = resultSet.getString("example");
                 final var systemVersion = Version.fromString(resultSet.getString("system_version"));
+                final var label = resultSet.getString("label");
                 final var jsonValue = resultSet.getString("json_value");
-                output.set(SchemaCategoryEntity.fromJsonValue(id, version, lastValid, label, systemVersion, jsonValue));
+                output.set(SchemaCategoryEntity.fromJsonValue(id, version, lastValid, example, systemVersion, label, jsonValue));
             }
         });
     }
@@ -138,22 +144,24 @@ public class SchemaCategoryRepository {
     public void save(SchemaCategoryEntity entity) {
         db.run(connection -> {
             final var statement = connection.prepareStatement("""
-                INSERT INTO schema_category (id, version, last_valid, label, system_version, updated_AT, json_value)
-                VALUES (?, ?, ?, ?, ?, NOW(), ?::jsonb)
+                INSERT INTO schema_category (id, version, last_valid, example, system_version, label, updated_at, json_value)
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), ?::jsonb)
                 ON CONFLICT (id) DO UPDATE SET
                     version = EXCLUDED.version,
                     last_valid = EXCLUDED.last_valid,
-                    label = EXCLUDED.label,
+                    example = EXCLUDED.example,
                     system_version = EXCLUDED.system_version,
+                    label = EXCLUDED.label,
                     updated_at = EXCLUDED.updated_at,
                     json_value = EXCLUDED.json_value;
                 """);
             setId(statement, 1, entity.id());
             statement.setString(2, entity.version().toString());
             statement.setString(3, entity.lastValid().toString());
-            statement.setString(4, entity.label);
+            statement.setString(4, entity.example);
             statement.setString(5, entity.systemVersion().toString());
-            statement.setString(6, entity.toJsonValue());
+            statement.setString(6, entity.label);
+            statement.setString(7, entity.toJsonValue());
             executeChecked(statement);
         });
     }

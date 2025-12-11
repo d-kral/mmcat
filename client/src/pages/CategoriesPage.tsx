@@ -1,7 +1,7 @@
 import { useState, useCallback, type KeyboardEvent } from 'react';
-import { SchemaCategoriesTable } from '@/components/category/SchemaCategoriesTable';
+import { CategoriesTable } from '@/components/category/CategoriesTable';
 import { api } from '@/api';
-import { SchemaCategoryInfo } from '@/types/schema';
+import { CategoryInfo, type Example } from '@/types/schema';
 import { toast } from 'react-toastify';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
@@ -12,12 +12,7 @@ import { FaPlus } from 'react-icons/fa';
 import { routes } from '@/routes/routes';
 import { InfoBanner, InfoTooltip, SpinnerButton } from '@/components/common/components';
 import { PageLayout } from '@/components/RootLayout';
-
-export const EMPTY_CATEGORY = 'empty';
-/** List of example schema names available for creation. */
-export const EXAMPLE_CATEGORIES = [ 'basic', 'adminer', 'adaptation' ] as const;
-
-type NewCategoryType = typeof EMPTY_CATEGORY | typeof EXAMPLE_CATEGORIES[number];
+import { CategoryExampleSelect } from '@/components/category/CategoryExampleSelect';
 
 /**
  * Renders the main page for managing schema categories, including creation, search, and display.
@@ -28,7 +23,7 @@ export function CategoriesPage() {
     const [ searchTerm, setSearchTerm ] = useState('');
     const banner = useBannerState('categories-page');
 
-    const { categories, fetching, createCategory, onDeleteCategory } = useSchemaCategories(loadedCategories);
+    const { categories, fetching, createCategory, onDeleteCategory } = useCategories(loadedCategories);
 
     const filteredCategories = categories.filter(category =>
         category.label.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -50,30 +45,16 @@ export function CategoriesPage() {
                         fid={FID_EMPTY}
                         fetching={fetching}
                         color='primary'
-                        // size='sm'
-                        startContent={<FaPlus className='size-4' />}
                     >
-                        New Schema
+                        <FaPlus className='size-4' /> New Schema
                     </SpinnerButton>
 
-                    {EXAMPLE_CATEGORIES.map(example => (
-                        <SpinnerButton
-                            key={example}
-                            onPress={() => createCategory(example, example, fidExample(example))}
-                            color='secondary'
-                            variant='flat'
-                            startContent={<FaPlus className='size-4' />}
-                            fetching={fetching}
-                            fid={fidExample(example)}
-                        >
-                            Example ({example})
-                        </SpinnerButton>
-                    ))}
+                    <CategoryExampleSelect isFetching={fetching === FID_EXAMPLE} onSelect={example => createCategory(example, example, FID_EXAMPLE)} />
                 </div>
             </div>
 
             <InfoBanner {...banner} className='mb-6'>
-                <SchemaCategoryInfoInner />
+                <CategoryInfoInner />
             </InfoBanner>
 
             {/* Action Bar (Search + Buttons) */}
@@ -100,7 +81,7 @@ export function CategoriesPage() {
             <div className='space-y-6'>
                 {categories.length > 0 ? (
                     filteredCategories.length > 0 ? (
-                        <SchemaCategoriesTable
+                        <CategoriesTable
                             categories={filteredCategories}
                             onDeleteCategory={onDeleteCategory}
                         />
@@ -119,19 +100,17 @@ export function CategoriesPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 // TODO The fetching animation should be on the button in the modal ...
-                onSubmit={label => createCategory(label, EMPTY_CATEGORY, FID_EMPTY)}
+                onSubmit={label => createCategory(label, undefined, FID_EMPTY)}
             />
         </PageLayout>
     );
 }
 
 const FID_EMPTY = 'empty';
-function fidExample(example: string) {
-    return `example-${example}`;
-}
+const FID_EXAMPLE = 'example';
 
 export type CategoriesLoaderData = {
-    categories: SchemaCategoryInfo[];
+    categories: CategoryInfo[];
 };
 
 CategoriesPage.loader = async (): Promise<CategoriesLoaderData> => {
@@ -140,21 +119,21 @@ CategoriesPage.loader = async (): Promise<CategoriesLoaderData> => {
         throw new Error('Failed to load schema categories');
 
     return {
-        categories: response.data.map(SchemaCategoryInfo.fromResponse),
+        categories: response.data.map(CategoryInfo.fromResponse),
     };
 };
 
-export function useSchemaCategories(loadedCategories: SchemaCategoryInfo[]) {
+export function useCategories(loadedCategories: CategoryInfo[]) {
     const [ categories, setCategories ] = useState(loadedCategories);
     const [ fetching, setFetching ] = useState<string>();
     const navigate = useNavigate();
 
-    const createCategory = useCallback(async (label: string, type: NewCategoryType, fid: string) => {
-        const isExample = type !== EMPTY_CATEGORY;
+    const createCategory = useCallback(async (label: string, example: Example | undefined, fid: string) => {
+        const isExample = !!example;
 
         setFetching(fid);
         const response = isExample
-            ? await api.schemas.createExampleCategory({ type })
+            ? await api.schemas.createExampleCategory({ type: example })
             : await api.schemas.createNewCategory({}, { label });
         setFetching(undefined);
 
@@ -163,7 +142,7 @@ export function useSchemaCategories(loadedCategories: SchemaCategoryInfo[]) {
             return;
         }
 
-        const newCategory = SchemaCategoryInfo.fromResponse(response.data);
+        const newCategory = CategoryInfo.fromResponse(response.data);
         setCategories(prev => [ newCategory, ...(prev ?? []) ]);
 
         toast.success(`${isExample ? 'Example schema' : 'Schema'} '${newCategory.label}' created successfully!`);
@@ -244,7 +223,7 @@ export function CreateSchemaModal({ isOpen, onClose, onSubmit }: CreateSchemaMod
     );
 }
 
-export function SchemaCategoryInfoInner() {
+function CategoryInfoInner() {
     return (<>
         <h2>Understanding Schema Categories</h2>
 

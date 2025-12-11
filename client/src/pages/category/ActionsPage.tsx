@@ -47,9 +47,8 @@ export function ActionsPage() {
                     as={Link}
                     to={routes.category.actions.new.resolve({ categoryId: category.id })}
                     color='primary'
-                    startContent={<FaPlus className='size-4' />}
                 >
-                    Add Action
+                    <FaPlus className='size-4' /> Add Action
                 </Button>
             </div>
 
@@ -67,8 +66,7 @@ export function ActionsPage() {
                 ) : (
                     <EmptyState
                         message='No actions available.'
-                        buttonText='Add Action'
-                        buttonStartContent={<FaPlus className='size-4' />}
+                        button={<><FaPlus className='size-4' /> Add Action</>}
                         to={routes.category.actions.new.resolve({ categoryId: category.id })}
                     />
                 )}
@@ -219,7 +217,7 @@ function ActionsTable({ actions, onDeleteAction }: ActionsTableProps) {
     </>);
 }
 
-export function ActionInfoInner() {
+function ActionInfoInner() {
     return (<>
         <h2>Understanding Actions & Jobs</h2>
 

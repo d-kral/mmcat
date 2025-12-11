@@ -11,6 +11,7 @@ import cz.matfyz.server.category.SchemaCategoryService;
 import cz.matfyz.server.category.SchemaCategoryService.SchemaEvolutionInit;
 import cz.matfyz.server.datasource.DatasourceEntity;
 import cz.matfyz.server.datasource.DatasourceService;
+import cz.matfyz.server.example.ExampleController.Example;
 import cz.matfyz.server.example.common.DatasourceBuilder;
 import cz.matfyz.server.example.common.MappingEntityBuilder;
 import cz.matfyz.server.example.common.QueryBuilder;
@@ -38,7 +39,7 @@ public class ExampleSetup {
 
         createMappings(datasources, schema, version);
 
-        // // TODO jobs
+        // TODO jobs
 
         return schema;
     }
@@ -47,7 +48,7 @@ public class ExampleSetup {
     private SchemaCategoryService schemaService;
 
     private SchemaCategoryEntity createSchemaCategory() {
-        final SchemaCategoryEntity schemaEntity = schemaService.create(Schema.schemaLabel);
+        final SchemaCategoryEntity schemaEntity = schemaService.create(Example.queryEvolution, Schema.schemaLabel);
 
         final SchemaEvolutionInit schemaUpdate = SchemaSetup.createNewUpdate(schemaEntity, 1);
 

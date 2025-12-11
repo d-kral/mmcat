@@ -96,7 +96,7 @@ export function QueryDisplay(props: QueryDisplayProps) {
             </SpinnerButton>
 
             {!query && (
-                <QueryExampleSelect queryString={queryString} onSelect={setQueryString} />
+                <QueryExampleSelect categoryExample={category.example} queryString={queryString} onSelect={setQueryString} />
             )}
 
             <div className='grow' />

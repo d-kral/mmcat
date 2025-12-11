@@ -2,23 +2,24 @@ import { type ReactNode, useState } from 'react';
 import { type BaseSpinnerButtonProps, CustomLink, SpinnerButton } from '@/components/common/components';
 import { routes } from '@/routes/routes';
 import { api } from '@/api';
-import { SchemaCategoryInfo } from '@/types/schema';
+import { CategoryInfo } from '@/types/schema';
 import { Button, Card, CardBody } from '@heroui/react';
 import { toast } from 'react-toastify';
 import { BookOpenIcon } from '@heroicons/react/24/solid';
 import { FaDatabase, FaPlus, FaArrowRight } from 'react-icons/fa';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { PageLayout } from '@/components/RootLayout';
-import { CreateSchemaModal, EMPTY_CATEGORY, EXAMPLE_CATEGORIES, useSchemaCategories } from './CategoriesPage';
+import { CreateSchemaModal, useCategories } from './CategoriesPage';
 import { type IconType } from 'react-icons/lib';
 import { cn } from '@/components/common/utils';
+import { CategoryExampleSelect } from '@/components/category/CategoryExampleSelect';
 
 export function HomePage() {
     const { categories: loadedCategories } = useLoaderData() as HomeLoaderData;
     const [ isModalOpen, setIsModalOpen ] = useState(false);
     const [ showAllCategories, setShowAllCategories ] = useState(false);
 
-    const { categories, fetching, createCategory } = useSchemaCategories(loadedCategories);
+    const { categories, fetching, createCategory } = useCategories(loadedCategories);
 
     return (
         <PageLayout className='max-w-7xl space-y-16'>
@@ -30,7 +31,7 @@ export function HomePage() {
                 fetching={fetching}
             />
 
-            <SchemaCategoriesSection
+            <CategoriesSection
                 categories={categories}
                 showAllCategories={showAllCategories}
                 setShowAllCategories={setShowAllCategories}
@@ -43,14 +44,14 @@ export function HomePage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 // TODO The fetching animation should be on the button in the modal ...
-                onSubmit={label => createCategory(label, EMPTY_CATEGORY, FID_EMPTY_MODAL)}
+                onSubmit={label => createCategory(label, undefined, FID_EMPTY_MODAL)}
             />
         </PageLayout>
     );
 }
 
 export type HomeLoaderData = {
-    categories: SchemaCategoryInfo[];
+    categories: CategoryInfo[];
 };
 
 HomePage.loader = async (): Promise<HomeLoaderData> => {
@@ -59,7 +60,7 @@ HomePage.loader = async (): Promise<HomeLoaderData> => {
         throw new Error('Failed to load schema categories');
 
     return {
-        categories: response.data.map(SchemaCategoryInfo.fromResponse),
+        categories: response.data.map(CategoryInfo.fromResponse),
     };
 };
 
@@ -82,7 +83,7 @@ function HeaderSection() {
 type GettingStartedSectionProps = {
     onOpenModal: () => void;
     fetching: string | undefined;
-    categories?: SchemaCategoryInfo[];
+    categories?: CategoryInfo[];
 };
 
 function GettingStartedSection({ onOpenModal, fetching, categories }: GettingStartedSectionProps) {
@@ -164,16 +165,16 @@ function GettingStartedSection({ onOpenModal, fetching, categories }: GettingSta
 
 const FID_EMPTY_FEATURE = 'empty-feature';
 
-type SchemaCategoriesSectionProps = {
-    categories: SchemaCategoryInfo[];
+type CategoriesSectionProps = {
+    categories: CategoryInfo[];
     showAllCategories: boolean;
     setShowAllCategories: (state: boolean) => void;
     onOpenModal: () => void;
-    createCategory: ReturnType<typeof useSchemaCategories>['createCategory'];
+    createCategory: ReturnType<typeof useCategories>['createCategory'];
     fetching: string | undefined;
 };
 
-function SchemaCategoriesSection({ categories, showAllCategories, setShowAllCategories, onOpenModal, fetching, createCategory }: SchemaCategoriesSectionProps) {
+function CategoriesSection({ categories, showAllCategories, setShowAllCategories, onOpenModal, fetching, createCategory }: CategoriesSectionProps) {
     return (
         <div className='space-y-8'>
             <div className='flex flex-col md:flex-row md:items-end justify-between gap-4'>
@@ -189,26 +190,13 @@ function SchemaCategoriesSection({ categories, showAllCategories, setShowAllCate
                     <SpinnerButton
                         onPress={onOpenModal}
                         color='primary'
-                        startContent={<FaPlus className='size-4' />}
                         fetching={fetching}
                         fid={FID_EMPTY_MODAL}
                     >
-                        New Schema
+                        <FaPlus className='size-4' /> New Schema
                     </SpinnerButton>
 
-                    {EXAMPLE_CATEGORIES.map(example => (
-                        <SpinnerButton
-                            key={example}
-                            onPress={() => createCategory(example, example, fidExample(example))}
-                            color='secondary'
-                            variant='flat'
-                            startContent={<FaPlus className='size-4' />}
-                            fetching={fetching}
-                            fid={fidExample(example)}
-                        >
-                            Example ({example})
-                        </SpinnerButton>
-                    ))}
+                    <CategoryExampleSelect isFetching={fetching === FID_EXAMPLE} onSelect={example => createCategory(example, example, FID_EXAMPLE)} />
                 </div>
             </div>
 
@@ -253,9 +241,7 @@ function SchemaCategoriesSection({ categories, showAllCategories, setShowAllCate
     );
 }
 
-function fidExample(example: string) {
-    return `example-${example}`;
-}
+const FID_EXAMPLE = 'example';
 
 type FeatureCardProps = {
     Icon: IconType;

@@ -97,7 +97,7 @@ export function JobsPage() {
             ) : (
                 <EmptyState
                     message='No runs available yet. First create an Action.'
-                    buttonText='Go to Actions Page'
+                    button='Go to Actions Page'
                     to={routes.category.actions.list.resolve({ categoryId: category.id })}
                 />
             )}
@@ -194,7 +194,7 @@ function RunRow({ runId, jobs }: { runId: Id, jobs: Job[] }) {
     );
 }
 
-export function JobInfoInner() {
+function JobInfoInner() {
     const { category } = useCategoryInfo();
 
     return (<>
