@@ -89,7 +89,7 @@ export function InfoBanner({ children, isDismissed, setIsDismissed, className }:
 
     return (
         <Card shadow='sm' radius='lg' className={cn('relative bg-content1', className)}>
-            <CardBody className='text-sm text-foreground px-4 py-3 relative'>
+            <CardBody className='text-sm text-foreground px-4 py-3 space-y-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:text-base [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:marker:text-primary-500 [&_ul]:marker:text-lg'>
                 <button
                     onClick={() => setIsDismissed(true)}
                     className='absolute top-2 right-2 text-default-500 hover:text-foreground transition cursor-pointer'

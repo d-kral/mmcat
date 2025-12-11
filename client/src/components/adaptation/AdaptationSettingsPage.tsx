@@ -13,7 +13,7 @@ import { DatasourceBadge } from '../datasource/DatasourceBadge';
 import { getEdgeSignature } from '../category/graph/categoryGraph';
 import { QueriesTable } from '../querying/QueriesTable';
 import { type Query } from '@/types/query';
-import { GoDotFill } from 'react-icons/go';
+import { dataSizeQuantity, prettyPrintInt } from '@/types/utils/common';
 
 type AdaptationSettingsPageProps = {
     category: Category;
@@ -79,7 +79,7 @@ export function AdaptationSettingsPage({ category, datasources, queries, updateQ
 
             <h2 className='mb-2 text-lg font-semibold'>Kinds & Relationships</h2>
 
-            <div className='mb-4 grid grid-cols-4 gap-4'>
+            <div className='mb-2 grid grid-cols-4 gap-4'>
                 <div className='col-span-3'>
                     <Card>
                         <KindGraphDisplay graph={state.graph} selection={state.selection} dispatch={dispatch} className='h-[300px]' />
@@ -88,13 +88,17 @@ export function AdaptationSettingsPage({ category, datasources, queries, updateQ
 
                 <Card className='p-4'>
                     {state.selection.firstNodeId ? (
-                        <NodeEditor state={state} dispatch={dispatch} datasources={datasources} />
+                        <NodeEditor state={state} dispatch={dispatch} />
                     ) : state.selection.firstEdgeId ? (
                         <EdgeEditor state={state} dispatch={dispatch} />
                     ) : (
                         <div>Select a kind or relationship to edit its details.</div>
                     )}
                 </Card>
+            </div>
+
+            <div className='mb-4 flex items-center gap-8'>
+                <AggregatedMorphismsOperationsForm state={state} dispatch={dispatch} />
             </div>
 
             <h2 className='mb-2 text-lg font-semibold'>Queries</h2>
@@ -118,55 +122,95 @@ export function AdaptationSettingsPage({ category, datasources, queries, updateQ
 
 function AdaptationSettingsInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Adaptation Settings</h2>
+        <h2>Adaptation Settings</h2>
+
         <p>
             Configure how the advisor explores mapping alternatives. Choose algorithm parameters, select which datasources to consider, and tune per-query weights. The visualization lets you inspect entities and edge options.
         </p>
 
-        <ul className='mt-3 space-y-2'>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <ul>
+            <li>
                 <span className='font-bold'>Parameters:</span> E.g., exploration weight for MCTS — affects search trade-off between exploring and exploiting.
             </li>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Graph editing:</span> Click a node to set its default datasource; click an edge to allow reference/embedding/inlining.
             </li>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Query weights:</span> By default, they are equal to execution counts, but you can override them here.
             </li>
         </ul>
 
-        <p className='mt-3'>
+        <p>
             Save anytime. When ready, use <span className='font-bold'>Start</span> to launch a job that will run the optimization on the server.
         </p>
     </>);
 }
 
-type NodeEditorProps = {
+type StateDispatchProps = {
     state: AdaptationSettingsState;
     dispatch: AdaptationSettingsDispatch;
-    datasources: Datasource[];
 };
 
-function NodeEditor({ state, dispatch, datasources }: NodeEditorProps) {
+function AggregatedMorphismsOperationsForm({ state, dispatch }: StateDispatchProps) {
+    const morphisms = state.form.morphisms;
+
+    const { isReferenceAllowed, isEmbeddingAllowed, isInliningAllowed } = useMemo(() => {
+        let references = 0;
+        let embeddings = 0;
+        let inlinings = 0;
+
+        morphisms.values().forEach(m => {
+            references += m.isReferenceAllowed ? 1 : 0;
+            embeddings += m.isEmbeddingAllowed ? 1 : 0;
+            inlinings += m.isInliningAllowed ? 1 : 0;
+        });
+
+        return {
+            isReferenceAllowed: references === morphisms.size ? true : references === 0 ? false : undefined,
+            isEmbeddingAllowed: embeddings === morphisms.size ? true : embeddings === 0 ? false : undefined,
+            isInliningAllowed: inlinings === morphisms.size ? true : inlinings === 0 ? false : undefined,
+        };
+    }, [ morphisms ]);
+
+    function setMorphisms(edit: Partial<Omit<AdaptationMorphism, 'signature'>>) {
+        dispatch({ type: 'form', field: 'morphisms', edit });
+    }
+
+    return (<>
+        <h3 className='text-lg font-semibold'>Allowed edge operations</h3>
+
+        <Checkbox isSelected={!!isReferenceAllowed} isIndeterminate={isReferenceAllowed === undefined} onValueChange={value => setMorphisms({ isReferenceAllowed: value })}>
+            Reference
+        </Checkbox>
+
+        <Checkbox isSelected={!!isEmbeddingAllowed} isIndeterminate={isEmbeddingAllowed === undefined} onValueChange={value => setMorphisms({ isEmbeddingAllowed: value })}>
+            Embedding
+        </Checkbox>
+
+        <Checkbox isSelected={!!isInliningAllowed} isIndeterminate={isInliningAllowed === undefined} onValueChange={value => setMorphisms({ isInliningAllowed: value })}>
+            Inlining
+        </Checkbox>
+    </>);
+}
+
+function NodeEditor({ state, dispatch }: StateDispatchProps) {
     const { graph, selection } = state;
 
     const selectedNode = graph.nodes.get(selection.firstNodeId!)!;
+    const objex = state.adaptation.settings.objexes.get(selectedNode.objex.key);
 
-    const items = useMemo(() => {
-        return datasources
-            .filter(item =>
-                [ DatasourceType.postgresql, DatasourceType.mongodb, DatasourceType.neo4j ].includes(item.type),
-            );
-    }, [ datasources ]);
+    // const items = useMemo(() => {
+    //     return datasources
+    //         .filter(item =>
+    //             [ DatasourceType.postgresql, DatasourceType.mongodb, DatasourceType.neo4j ].includes(item.type),
+    //         );
+    // }, [ datasources ]);
 
-    const datasource = selectedNode.datasource;
+    // const datasource = selectedNode.datasource;
 
-    function setDatasource(datasource: Datasource) {
-        // TODO Update adaptation settings and graph
-    }
+    // function setDatasource(datasource: Datasource) {
+    //     // TODO Update adaptation settings and graph
+    // }
 
     return (<>
         <h3 className='mb-2 text-lg font-semibold'>Edit Kind</h3>
@@ -174,7 +218,7 @@ function NodeEditor({ state, dispatch, datasources }: NodeEditorProps) {
         <div className='text-sm font-semibold text-foreground-400'>Label</div>
         {selectedNode.objex.metadata.label}
 
-        <div className='mt-2'>
+        {/* <div className='mt-2'>
             <Select
                 items={items}
                 label='Datasource'
@@ -199,8 +243,7 @@ function NodeEditor({ state, dispatch, datasources }: NodeEditorProps) {
                     </SelectItem>
                 )}
             </Select>
-        </div>
-
+        </div> */}
 
         {/* <div className='mb-1 text-sm font-semibold text-foreground-400'>Datasource</div>
                     {selectedNode.datasource && (
@@ -208,6 +251,16 @@ function NodeEditor({ state, dispatch, datasources }: NodeEditorProps) {
                             <DatasourceBadge type={selectedNode.datasource.type} isFullName />
                         </div>
                     )} */}
+
+        {objex?.mapping && (objex.mapping.dataSizeInBytes || objex.mapping.recordCount) && (<>
+            <div className='mt-2 text-sm font-semibold text-foreground-400'>Data size</div>
+            {objex.mapping.dataSizeInBytes && (
+                <div>{dataSizeQuantity.prettyPrint(objex.mapping.dataSizeInBytes)}</div>
+            )}
+            {objex.mapping.recordCount && (
+                <div>{prettyPrintInt(objex.mapping.recordCount)} records</div>
+            )}
+        </>)}
 
         <div className='mt-2 text-sm font-semibold text-foreground-400'>Properties</div>
         <ul className='pl-5 list-disc'>
@@ -220,41 +273,29 @@ function NodeEditor({ state, dispatch, datasources }: NodeEditorProps) {
     </>);
 }
 
-type EdgeEditorProps = {
-    state: AdaptationSettingsState;
-    dispatch: AdaptationSettingsDispatch;
-};
+function EdgeEditor({ state, dispatch }: StateDispatchProps) {
+    const { selection } = state;
 
-function EdgeEditor({ state, dispatch }: EdgeEditorProps) {
-    const { graph, selection } = state;
-
-    const selectedEdge = graph.edges.get(selection.firstEdgeId!)!;
-    const morphism = state.adaptation.settings.morphisms.get(getEdgeSignature(selectedEdge.id));
-    // The morphism might not exist yet.
-    // TODO If not, we should probably create it in the form (and we should use the form state).
-    const {
-        isReferenceAllowed = false,
-        isEmbeddingAllowed = false,
-        isInliningAllowed = false,
-    } = morphism ?? {};
+    const edgeId = selection.firstEdgeId!;
+    const edge = state.form.morphisms.get(edgeId);
 
     function setMorphism(edit: Partial<Omit<AdaptationMorphism, 'signature'>>) {
-
+        dispatch({ type: 'form', field: 'morphism', edgeId, edit });
     }
 
     return (<>
         <h3 className='mb-2 text-lg font-semibold'>Edit Relationship</h3>
 
         <h4 className='mb-1 text-sm font-semibold text-foreground-400'>Allowed operations</h4>
-        <Checkbox isSelected={isReferenceAllowed} onValueChange={value => setMorphism({ isReferenceAllowed: value })}>
+        <Checkbox isSelected={edge?.isReferenceAllowed ?? false} onValueChange={value => setMorphism({ isReferenceAllowed: value })} isDisabled={!edge}>
             Reference
         </Checkbox>
 
-        <Checkbox isSelected={isEmbeddingAllowed} onValueChange={value => setMorphism({ isEmbeddingAllowed: value })}>
+        <Checkbox isSelected={edge?.isEmbeddingAllowed ?? false} onValueChange={value => setMorphism({ isEmbeddingAllowed: value })} isDisabled={!edge}>
             Embedding
         </Checkbox>
 
-        <Checkbox isSelected={isInliningAllowed} onValueChange={value => setMorphism({ isInliningAllowed: value })}>
+        <Checkbox isSelected={edge?.isInliningAllowed ?? false} onValueChange={value => setMorphism({ isInliningAllowed: value })} isDisabled={!edge}>
             Inlining
         </Checkbox>
     </>);

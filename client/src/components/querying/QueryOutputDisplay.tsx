@@ -389,10 +389,30 @@ export function QueryWeightTableDisplay({ query, allWeights, onUpdate }: QueryWe
             setPhase('view');
     }
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        // This is just the worst. So ... the react aria were once again high as a kite and decided it would be a wonderful idea to hijack arrow key events so that they can use them to mangage focus in tables ... even better, without any way to opt out of this bullshit. Fucking retards.
+        const c = new AbortController();
+
+        if (inputRef.current) {
+            document.addEventListener('keydown', (e: KeyboardEvent) => {
+                // FIXME Use this also for home and end keys in number inputs in general. I tested it works.
+                if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Home' && e.key !== 'End')
+                    return;
+                e.stopPropagation();
+            // Yeah and why not do it during the capture phase so that it would be especially hard to debug, right?
+            }, { signal: c.signal, capture: true });
+        }
+
+        return () => c.abort();
+    }, [ phase ]);
+
     if (phase !== 'view') {
         return (
             <div className='-my-1 inline-flex gap-1'>
                 <NumberInput
+                    ref={inputRef}
                     hideStepper
                     isWheelDisabled
                     size='sm'

@@ -7,7 +7,6 @@ import { useCategoryInfo } from '@/components/context/CategoryInfoProvider';
 import { LoadingPage, ReloadPage } from '../errorPages';
 import { JobStateIcon } from './JobPage';
 import { usePreferences } from '@/components/context/PreferencesProvider';
-import { GoDotFill } from 'react-icons/go';
 import { useBannerState } from '@/types/utils/useBannerState';
 import { routes } from '@/routes/routes';
 import { InfoBanner, InfoTooltip } from '@/components/common/components';
@@ -199,51 +198,40 @@ export function JobInfoInner() {
     const { category } = useCategoryInfo();
 
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Understanding Jobs & Runs</h2>
+        <h2>Understanding Jobs & Runs</h2>
+
         <p>
             A <span className='font-bold'>Job</span> is a single execution of a transformation algorithm, while a <span className='font-bold'>Run</span> is a group of related Jobs processed together.
         </p>
 
-        <ul className='mt-3 space-y-2'>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <ul>
+            <li>
                 <span className='font-bold'>Job:</span> Executes a transformation (e.g., importing/exporting data).
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Run:</span> A batch of Jobs executed sequentially.
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
-                <span className='font-bold'>Status:</span> Jobs can be <Chip size='sm'>Ready</Chip><Chip size='sm'>Running</Chip><Chip size='sm'>Finished</Chip><Chip size='sm'>Failed</Chip> or <Chip size='sm'>Disabled</Chip>.
+            <li>
+                <span className='font-bold'>Status:</span> Jobs can be <Chip size='sm'>Ready</Chip>, <Chip size='sm'>Running</Chip>, <Chip size='sm'>Finished</Chip>, <Chip size='sm'>Failed</Chip>, or <Chip size='sm'>Disabled</Chip>.
             </li>
         </ul>
 
-        <p className='mt-3'>
+        <p>
             Jobs run in order, and Runs help organize batch processing. Inspired by GitLab pipelines.
         </p>
 
-        {/* Hint Section */}
-        <h3 className='font-semibold mb-1 mt-4'>Next Steps</h3>
-        <ul className='space-y-1'>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <h3>Next Steps</h3>
+
+        <ul>
+            <li>
                 <span className='font-bold'>Manage Jobs:</span> Click a circle in the <em>Jobs</em> column of a Run or hover to see details.
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
-
-                <span className='font-bold'>Create a New Run & Jobs:</span>
-                Go to the
-                <span>
-                    <Link
-                        to={routes.category.actions.list.resolve({ categoryId: category.id })}
-                        className='text-primary-500 hover:underline'
-                    >
-                        Actions page
-                    </Link>
-                    .
-                </span>
+            <li>
+                <span className='font-bold'>Create a New Run & Jobs:</span> Go to the{' '}
+                <Link to={routes.category.actions.list.resolve({ categoryId: category.id })} className='text-primary-500 hover:underline'>
+                    Actions page
+                </Link>
+                .
             </li>
         </ul>
     </>);

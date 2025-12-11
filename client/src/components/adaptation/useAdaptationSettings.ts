@@ -1,6 +1,6 @@
 import { useReducer, type Dispatch } from 'react';
 import { FreeSelection } from '../category/graph/selection';
-import { getNodeKey } from '../category/graph/categoryGraph';
+import { getEdgeId, getNodeKey } from '../category/graph/categoryGraph';
 import { type Category } from '@/types/schema';
 import { type GraphMoveEvent } from '../graph/graphEngine';
 import { type Adaptation } from './adaptation';
@@ -22,14 +22,36 @@ export type AdaptationSettingsState = {
 };
 
 function createInitialState({ category, adaptation }: { category: Category, adaptation: Adaptation }): AdaptationSettingsState {
+    const morphisms = new Map<string, EdgeForm>();
+    category.morphisms.values()
+        .filter(m => {
+        // Only include edges where both dom and cod do participate in the adaptation.
+            const dom = adaptation.settings.objexes.get(m.schema.domKey);
+            const cod = adaptation.settings.objexes.get(m.schema.codKey);
+            return dom?.mapping && cod?.mapping;
+        })
+        .forEach(m => {
+            const morphism = adaptation.settings.morphisms.get(m.signature);
+            if (!morphism)
+            // TODO Not sure if this can happen ...
+                return;
+
+            morphisms.set(getEdgeId(m), {
+                isReferenceAllowed: morphism.isReferenceAllowed,
+                isEmbeddingAllowed: morphism.isEmbeddingAllowed,
+                isInliningAllowed: morphism.isInliningAllowed,
+            });
+        });
+
     return {
         category,
         adaptation,
-        graph: categoryToKindGraph(category, objex => adaptation.settings.objexes.get(objex.key)?.datasource),
+        graph: categoryToKindGraph(category, objex => adaptation.settings.objexes.get(objex.key)?.mapping?.datasource),
         selection: FreeSelection.create(),
         form: {
             explorationWeight: adaptation.settings.explorationWeight,
             datasourceIds: new Set(adaptation.settings.datasources.map(ds => ds.id)),
+            morphisms,
         },
     };
 }
@@ -79,6 +101,14 @@ function selection(state: AdaptationSettingsState, { selection }: SelectionActio
 export type AdaptationSettingsForm = {
     explorationWeight: number;
     datasourceIds: Set<Id>;
+    /** Morphism that can participate in the adaptation (both dom and cod do participate). */
+    morphisms: Map<string, EdgeForm>;
+};
+
+type EdgeForm = {
+    isReferenceAllowed: boolean;
+    isEmbeddingAllowed: boolean;
+    isInliningAllowed: boolean;
 };
 
 type FormAction = {
@@ -89,8 +119,29 @@ type FormAction = {
 } | {
     field: 'datasourceIds';
     value: Set<Id>;
+} | {
+    field: 'morphism';
+    edgeId: string;
+    edit: Partial<EdgeForm>;
+} | {
+    // Set entire edges map.
+    field: 'morphisms';
+    edit: Partial<EdgeForm>;
 });
 
 function form(state: AdaptationSettingsState, action: FormAction): AdaptationSettingsState {
+    if (action.field === 'morphism') {
+        const morphisms = new Map(state.form.morphisms);
+        const prev = morphisms.get(action.edgeId)!;
+        morphisms.set(action.edgeId, { ...prev, ...action.edit });
+        return { ...state, form: { ...state.form, morphisms } };
+    }
+
+    if (action.field === 'morphisms') {
+        const morphisms = new Map<string, EdgeForm>();
+        state.form.morphisms.forEach((prev, key) => morphisms.set(key, { ...prev, ...action.edit }));
+        return { ...state, form: { ...state.form, morphisms } };
+    }
+
     return { ...state, form: { ...state.form, [action.field]: action.value } };
 }

@@ -1,6 +1,6 @@
 import { type Dispatch, useMemo, useState } from 'react';
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, Button, Tooltip, Pagination } from '@heroui/react';
-import { EyeIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { type Query } from '@/types/query';
 import { useNavigate } from 'react-router-dom';
 import { usePreferences } from '../context/PreferencesProvider';

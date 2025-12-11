@@ -73,18 +73,34 @@ function adaptationSettingsFromResponse(input: AdaptationSettingsResponse, datas
 
 type AdaptationObjexResponse = {
     key: KeyResponse;
-    datasourceId: Id | null;
+    mapping: {
+        datasourceId: Id;
+        dataSizeInBytes: number | null;
+        recordCount: number | null;
+    } | null;
 };
 
 export type AdaptationObjex = {
     key: Key;
-    datasource: Datasource | undefined;
+    mapping?: {
+        datasource: Datasource;
+        // Some of these properties might be undefined if the DB doesn't support it (or if it would be too much pain to implement).
+        dataSizeInBytes: number | undefined;
+        recordCount: number | undefined;
+    };
 };
 
 function adaptationObjexFromResponse(input: AdaptationObjexResponse, datasources: Datasource[]): AdaptationObjex {
+    const inputMapping = input.mapping;
+    const mapping = inputMapping ? {
+        datasource: datasources.find(d => d.id === inputMapping.datasourceId)!,
+        dataSizeInBytes: inputMapping.dataSizeInBytes ?? undefined,
+        recordCount: inputMapping.recordCount ?? undefined,
+    } : undefined;
+
     return {
         key: Key.fromResponse(input.key),
-        datasource: input.datasourceId ? datasources.find(d => d.id === input.datasourceId) : undefined,
+        mapping,
     };
 }
 
@@ -202,8 +218,8 @@ export function mockAdaptationResultResponse(adaptation: Adaptation, datasources
 function getBasicDatasources(adaptation: Adaptation, datasources: Datasource[]) {
     const usedIds = new Set<Id>();
     adaptation.settings.objexes.values().forEach(objex => {
-        if (objex.datasource)
-            usedIds.add(objex.datasource.id);
+        if (objex.mapping)
+            usedIds.add(objex.mapping.datasource.id);
     });
 
     // We want to hit all basic types if possible. And ideally those created specifically for this adaptation. Not ideal tho.
@@ -219,18 +235,30 @@ function getBasicDatasources(adaptation: Adaptation, datasources: Datasource[]) 
     };
 }
 
+/** @deprecated */
 function mockAdaptationSolutionResponse(adaptation: Adaptation, datasourceToObjexes: Record<Id, number[]>, queries: Query[], mockSolution: MockAdaptationJobSolution): Omit<AdaptationSolutionResponse, 'id'> {
     const objexes: AdaptationObjexResponse[] = [];
 
     for (const datasourceId in datasourceToObjexes) {
-        for (const key of datasourceToObjexes[datasourceId])
-            objexes.push({ key, datasourceId });
+        for (const key of datasourceToObjexes[datasourceId]) {
+            const objex = adaptation.settings.objexes.get(Key.fromResponse(key));
+            objexes.push({ key, mapping: objex?.mapping ? {
+                datasourceId,
+                dataSizeInBytes: objex.mapping.dataSizeInBytes ?? null,
+                recordCount: objex.mapping.recordCount ?? null,
+            } : null });
+        }
     }
 
     // Fill in the remaining objexes.
     adaptation.settings.objexes.forEach(objex => {
-        if (objex.datasource && !objexes.some(o => o.key === objex.key.value))
-            objexes.push({ key: objex.key.toServer(), datasourceId: objex.datasource.id });
+        if (objex.mapping && !objexes.some(o => o.key === objex.key.value)) {
+            objexes.push({ key: objex.key.toServer(), mapping: {
+                datasourceId: objex.mapping.datasource.id,
+                dataSizeInBytes: objex.mapping.dataSizeInBytes ?? null,
+                recordCount: objex.mapping.recordCount ?? null,
+            } });
+        }
     });
 
     const adaptationQueries = queries.map(query => ({
@@ -256,6 +284,7 @@ export type MockAdaptationJob = {
     solutions: MockAdaptationJobSolution[];
 };
 
+/** @deprecated */
 type MockAdaptationJobSolution = {
     // We probably don't need more (however we might in the real implementation).
     speedup: number;
@@ -300,8 +329,10 @@ export function mockAdaptationJob(queries: Query[], prev: MockAdaptationJob | un
     };
 }
 
+/** @deprecated */
 let lastBestSolutions: MockAdaptationJobSolution[] = [];
 
+/** @deprecated */
 function mockAdaptationJobSolution(queries: Query[], poolSize: number): MockAdaptationJobSolution {
     const bonus = Math.max(0, Math.log(poolSize)) / 10;
     // Speed-up has to be in (-1, ∞). Let's also choose a reasonable upper bound.
@@ -339,6 +370,7 @@ function mockAdaptationJobSolution(queries: Query[], poolSize: number): MockAdap
     };
 }
 
+/** @deprecated */
 function getRandomQuerySpeedup(): number {
     const speedup = -1.2 + Math.random() * 3.9;
     return speedup > -1 ? speedup : 1 / speedup;

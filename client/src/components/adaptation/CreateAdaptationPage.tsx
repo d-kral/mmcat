@@ -9,7 +9,6 @@ import { useBannerState } from '@/types/utils/useBannerState';
 import { toast } from 'react-toastify';
 import { FeatureCard } from '@/pages/HomePage';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { GoDotFill } from 'react-icons/go';
 
 type CreateAdaptationPageProps = {
     category: Category;
@@ -67,7 +66,7 @@ export function CreateAdaptationPage({ category, datasources, onNext }: CreateAd
 
 function CreateAdaptationInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Understanding Adaptation</h2>
+        <h2>Understanding Adaptation</h2>
 
         <p>
             Adaptation is an automated process that searches for a better multi-model configuration of your schema and queries.
@@ -75,22 +74,19 @@ function CreateAdaptationInfoInner() {
             affects performance and cost.
         </p>
 
-        <ul className='mt-3 space-y-2'>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <ul>
+            <li>
                 <span className='font-bold'>Search-based optimization:</span> Uses MCTS to explore many mapping alternatives efficiently.
             </li>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Workload-aware:</span> Evaluates solutions based on your queries and their execution frequencies.
             </li>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Cost vs. performance:</span> Each candidate mapping is scored by expected speed-up and transformation price.
             </li>
         </ul>
 
-        <p className='text-sm mt-3'>
+        <p>
             The result is a ranked set of recommended configurations that align your schema with the capabilities of your datasources.
         </p>
     </>);

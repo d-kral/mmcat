@@ -402,6 +402,10 @@ class CartesianTForm {
         readonly Q: number,
     ) {}
 
+    // It would be possible to use svg markers for the arrow heads. We would then need just a single stroke (instead of its border).
+    // However, the markers are not visible in some browsers (e.g., Safari, who would have guessed that ...). Also, they are not clickable (or like, maybe they are somehow, but there's some more work to be done).
+    // So, let's just draw everything manually.
+
     arrow(x_1: number, x_2: number): string {
         const yHead = EDGE_ARROW_HEIGHT / 2;
         return this.lineBody(x_1, x_2) + `

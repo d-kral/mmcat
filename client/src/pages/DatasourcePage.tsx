@@ -8,7 +8,6 @@ import { MappingsTable } from '@/components/mapping/MappingsTable';
 import { toast } from 'react-toastify';
 import { EmptyState } from '@/components/common/tableComponents';
 import { DatasourceSpecificFields } from '@/components/datasource/CreateDatasourceModal';
-import { GoDotFill } from 'react-icons/go';
 import { useBannerState } from '@/types/utils/useBannerState';
 import { InfoBanner, InfoTooltip, SpinnerButton } from '@/components/common/components';
 import { routes } from '@/routes/routes';
@@ -282,18 +281,16 @@ function DatasourceDisplay() {
 
 function DatasourceDetailInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Managing a Data Source</h2>
-        <ul className='mt-2 space-y-2'>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <h2>Managing a Data Source</h2>
+
+        <ul>
+            <li>
                 <span className='font-bold'>Edit:</span> You can update connection details, but the type cannot be changed.
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Password:</span> If edit password field left empty, the existing password remains unchanged.
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Delete:</span> A Data Source can be removed if it’s not in use.
             </li>
         </ul>

@@ -8,13 +8,12 @@ import { useMemo, useState } from 'react';
 import { categoryToKindGraph } from './kindGraph';
 import { useKindGraph } from './useKindGraph';
 import { KindGraphDisplay } from './KindGraphDisplay';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 import { dataSizeQuantity, plural, prettyPrintDouble, prettyPrintInt } from '@/types/utils/common';
 import { type Query } from '@/types/query';
 import { QueriesTable } from '../querying/QueriesTable';
 import { InfoBanner, InfoTooltip } from '../common/components';
 import { useBannerState } from '@/types/utils/useBannerState';
-import { GoDotFill } from 'react-icons/go';
+import { ArrowPathIcon, PlayIcon } from '@heroicons/react/24/solid';
 
 type AdaptationResultPageProps = {
     category: Category;
@@ -33,8 +32,8 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
         const all = category.getObjexes().filter(o => o.isEntity)
             .sort((a, b) => a.key.value - b.key.value);
         // Let's assume that a kind has datasource iff it had one in the adaptation settings.
-        const included = all.filter(o => adaptation.settings.objexes.get(o.key)?.datasource);
-        const excluded = isShowExcluded ? all.filter(o => !adaptation.settings.objexes.get(o.key)?.datasource) : [];
+        const included = all.filter(o => adaptation.settings.objexes.get(o.key)?.mapping);
+        const excluded = isShowExcluded ? all.filter(o => !adaptation.settings.objexes.get(o.key)?.mapping) : [];
 
         return {
             kinds: [
@@ -45,6 +44,10 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
             excludedCount: all.length - included.length,
         };
     }, [ category, adaptation, isShowExcluded ]);
+
+    function resume() {
+        // TODO
+    }
 
     function restart() {
         // TODO
@@ -123,8 +126,14 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
             <QueriesTable queries={queries} solution={selectedSolution} itemsPerPage={5} />
 
             <div className='mt-4 flex justify-end gap-2'>
-                <Button color='warning' onPress={restart}>
-                    Restart Adaptation
+                <Button onPress={resume}>
+                    <PlayIcon className='size-5' />
+                    Resume
+                </Button>
+
+                <Button onPress={restart}>
+                    <ArrowPathIcon className='size-5' />
+                    Restart
                 </Button>
 
                 <Button color='primary' onPress={acceptSolution} isDisabled={!selectedSolution}>
@@ -137,27 +146,25 @@ export function AdaptationResultPage({ category, adaptation, result, queries }: 
 
 function AdaptationResultInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Results & Comparison</h2>
+        <h2>Results & Comparison</h2>
+
         <p>
             Compare the recommended mappings side-by-side. Each column corresponds to a solution (except the first one, which shows the original state), showing per-kind mappings, estimated speed-up, and migration price. Speed-ups (-1, ∞) are relative to the original configuration.
         </p>
 
-        <ul className='mt-3 space-y-2'>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <ul>
+            <li>
                 <span className='font-bold'>Table view:</span> Click a solution column to inspect it in the graph and query table.
             </li>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Graph view:</span> Shows which kinds are mapped to which datasources for the selected solution.
             </li>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Query table:</span> Query speed-ups are shown for each query under the chosen solution.
             </li>
         </ul>
 
-        <p className='mt-3'>
+        <p>
             Use the results to accept a solution and schedule migration, or rerun the search with adjusted settings.
         </p>
     </>);
@@ -204,8 +211,8 @@ function AdaptationSolutionColumn({ kinds, adaptation, solution, isSelected, onC
                         {kinds.map(k => {
                             const kind = objexes.get(k.key);
 
-                            return kind?.datasource ? (
-                                <DatasourceBadge key={kind.key.value} type={kind.datasource.type} />
+                            return kind?.mapping ? (
+                                <DatasourceBadge key={kind.key.value} type={kind.mapping.datasource.type} />
                             ) : (
                                 <div key={k.key.value} className='h-6 italic'>
                                     None
@@ -226,18 +233,16 @@ type AdaptationSolutionGraphProps = {
 };
 
 function AdaptationSolutionGraph({ category, adaptation, solution }: AdaptationSolutionGraphProps) {
-    const graph = useMemo(() => {
-        const objexes = solution?.objexes ?? adaptation.settings.objexes;
-        return categoryToKindGraph(category, objex => objexes.get(objex.key)?.datasource);
-    }, [ category, adaptation, solution ]);
     const { selection, dispatch } = useKindGraph();
 
-    const selectedNode = selection?.firstNodeId ? graph.nodes.get(selection.firstNodeId) : undefined;
+    const { graph, selectedNode, objex } = useMemo(() => {
+        const objexes = solution?.objexes ?? adaptation.settings.objexes;
+        const graph = categoryToKindGraph(category, objex => objexes.get(objex.key)?.mapping?.datasource);
+        const selectedNode = selection?.firstNodeId ? graph.nodes.get(selection.firstNodeId) : undefined;
+        const objex = selectedNode && solution?.objexes.get(selectedNode.objex.key);
 
-    // FIXME Use real values.
-    // TODO Some of these properties might be undefined if the DB doesn't support it (or if it would be too much pain to implement).
-    const tempDataSizeInBytes = Math.round(Math.random() * 29483553);
-    const tempRecordCount = Math.round(tempDataSizeInBytes / 150);
+        return { graph, selectedNode, objex };
+    }, [ category, adaptation, solution, selection ]);
 
     return (
         <div className='grid grid-cols-4 gap-4'>
@@ -249,11 +254,11 @@ function AdaptationSolutionGraph({ category, adaptation, solution }: AdaptationS
 
             <Card className='p-4'>
                 {selectedNode ? (<>
-                    <h3 className='mb-2 text-lg font-semibold'>{selectedNode.objex.metadata.label}</h3>
+                    <h3 className='text-lg font-semibold'>{selectedNode.objex.metadata.label}</h3>
 
-                    {selectedNode.datasource && (
-                        <div className='mb-2 flex items-center gap-2'>
-                            <DatasourceBadge type={selectedNode.datasource.type} />
+                    {objex?.mapping && (<>
+                        <div className='mt-2 flex items-center gap-2'>
+                            <DatasourceBadge type={objex.mapping.datasource.type} />
 
                             {/*
                                 TODO There was the previous datasource
@@ -262,11 +267,17 @@ function AdaptationSolutionGraph({ category, adaptation, solution }: AdaptationS
                                 <DatasourceBadge type={selectedNode.adaptation.type} />
                             </>)} */}
                         </div>
-                    )}
 
-                    <div className='text-sm font-semibold text-foreground-400'>Data size</div>
-                    <div>{dataSizeQuantity.prettyPrint(tempDataSizeInBytes)}</div>
-                    <div>{prettyPrintInt(tempRecordCount)} records</div>
+                        {(objex.mapping.dataSizeInBytes || objex.mapping.recordCount) && (<>
+                            <div className='mt-2 text-sm font-semibold text-foreground-400'>Data size</div>
+                            {objex.mapping.dataSizeInBytes && (
+                                <div>{dataSizeQuantity.prettyPrint(objex.mapping.dataSizeInBytes)}</div>
+                            )}
+                            {objex.mapping.recordCount && (
+                                <div>{prettyPrintInt(objex.mapping.recordCount)} records</div>
+                            )}
+                        </>)}
+                    </>)}
 
                     <div className='mt-2 text-sm font-semibold text-foreground-400'>Properties</div>
                     <ul className='pl-5 list-disc'>

@@ -5,7 +5,6 @@ import { Query } from '@/types/query';
 import { EmptyState } from '@/components/common/tableComponents';
 import { Button } from '@heroui/react';
 import { Link, type Params, useRouteLoaderData } from 'react-router-dom';
-// import { GoDotFill } from 'react-icons/go';
 import { useBannerState } from '@/types/utils/useBannerState';
 import { InfoBanner, InfoTooltip } from '@/components/common/components';
 import { FaPlus } from 'react-icons/fa';
@@ -82,29 +81,25 @@ QueriesPage.loader = async ({ params: { categoryId } }: { params: Params<'catego
 
 function QueriesInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Understanding Queries</h2>
-        {/* TODO */}
-        {/* <p>
-                A <span className='font-bold'>Datasource</span> represents where your data is stored. You can <span className='font-bold'>import from</span> or <span className='font-bold'>export to</span> different sources, including databases and files.
-            </p>
-
-            <ul className='mt-3 space-y-2'>
-                <li className='flex items-center gap-2'>
-                    <GoDotFill className='text-primary-500' />
-                    <span className='font-bold'>Databases:</span> MongoDB, PostgreSQL, Neo4j.
-                </li>
-                <li className='flex items-center gap-2'>
-                    <GoDotFill className='text-primary-500' />
-                    <span className='font-bold'>Files:</span> CSV, JSON, JSON-LD.
-                </li>
-            </ul>
-
-            <p className='mt-3'>
-                Click <span className='font-bold'>&quot;+ Add Datasource&quot;</span> to connect a new source. Once added, it will appear in the table below.
-            </p> */}
+        <h2>Understanding Queries</h2>
 
         <p>
-            TODO
+            A <span className='font-bold'>Query</span> is a an expression in <span className='font-bold'>MMQL</span> (Multi-Model Query Language), which is a SPARQL-like language over the <span className='font-bold'>Schema Category</span>.
+        </p>
+
+        <ul>
+            {/* TODO Maybe something about the version? However, we would need to change how it works - because now it's red if its < system version, so only one query can be up-to-date at a time. We should make it red only if it's not compatible with the current system version instead.
+
+<li>
+<span className='font-bold'>Version:</span> The
+</li> */}
+            <li>
+                <span className='font-bold'>Weight:</span> Indicates the importance of the query during adaptation. By default corresponds to the number of times the query has been executed, but can be adjusted manually.
+            </li>
+        </ul>
+
+        <p>
+            Click on <span className='font-bold'>&quot;+ Add Query&quot;</span> to create a new query. You can then save the query to re-execute it later as needed. Saved queries will be automatically updated whenever the schema category changes.
         </p>
     </>);
 }

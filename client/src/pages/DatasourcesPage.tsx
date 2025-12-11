@@ -6,7 +6,6 @@ import { Datasource } from '@/types/Datasource';
 import { EmptyState } from '@/components/common/tableComponents';
 import { Button } from '@heroui/react';
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
-import { GoDotFill } from 'react-icons/go';
 import { useBannerState } from '@/types/utils/useBannerState';
 import { InfoBanner, InfoTooltip } from '@/components/common/components';
 import { FaPlus } from 'react-icons/fa';
@@ -108,23 +107,22 @@ DatasourcesPage.loader = async (): Promise<DatasourcesLoaderData> =>{
 
 function DatasourcesInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Understanding Data Sources</h2>
+        <h2>Understanding Data Sources</h2>
+
         <p>
             A <span className='font-bold'>Datasource</span> represents where your data is stored. You can <span className='font-bold'>import from</span> or <span className='font-bold'>export to</span> different sources, including databases and files.
         </p>
 
-        <ul className='mt-3 space-y-2'>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <ul>
+            <li>
                 <span className='font-bold'>Databases:</span> MongoDB, PostgreSQL, Neo4j.
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Files:</span> CSV, JSON, JSON-LD.
             </li>
         </ul>
 
-        <p className='mt-3'>
+        <p>
             Click <span className='font-bold'>&quot;+ Add Datasource&quot;</span> to connect a new source. Once added, it will appear in the table below.
         </p>
     </>);

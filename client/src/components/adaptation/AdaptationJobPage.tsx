@@ -5,8 +5,6 @@ import { InfoBanner, InfoTooltip } from '../common/components';
 import { useBannerState } from '@/types/utils/useBannerState';
 import { prettyPrintDouble, prettyPrintInt, timeQuantity } from '@/types/utils/common';
 import { JobStateLabel } from '@/pages/category/JobPage';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { GoDotFill } from 'react-icons/go';
 
 type AdaptationJobPageProps = {
     adaptation: Adaptation;
@@ -79,7 +77,7 @@ export function AdaptationJobPage({ adaptation, job, onNext, onNextMock }: Adapt
 
             <div className='mt-4 flex justify-center'>
                 <Button color='primary' onPress={finishJob}>
-                    Finish Adaptation
+                    Inspect Results
                 </Button>
             </div>
         </PageLayout>
@@ -88,29 +86,27 @@ export function AdaptationJobPage({ adaptation, job, onNext, onNextMock }: Adapt
 
 function AdaptationJobInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Monitoring the Adaptation</h2>
+        <h2>Monitoring the Adaptation</h2>
+
         <p>
             The advisor is actively exploring the search space using MCTS. Because the number of possible configurations can be extremely large, the process is designed to produce meaningful intermediate results long before the search completes.
         </p>
 
-        <ul className='mt-3 space-y-2'>
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <ul>
+            <li>
                 <span className='font-bold'>Live exploration:</span> The advisor reports processed states and continuously updates the best solutions found so far.
             </li>
 
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Early stopping:</span> You can finish the adaptation at any moment. The current best solutions are fully usable and will be taken as the final result.
             </li>
 
-            <li className='flex items-start gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Non-blocking workflow:</span> The job runs on the server; you can leave the page and return anytime to check progress.
             </li>
         </ul>
 
-        <p className='text-sm mt-3'>
+        <p>
             Stopping early is often practical - even a partially explored search space can yield high-quality recommendations.
         </p>
     </>);

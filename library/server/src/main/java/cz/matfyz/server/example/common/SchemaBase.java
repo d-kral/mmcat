@@ -92,7 +92,7 @@ public abstract class SchemaBase {
         addMetadataOperation(new ObjexMetadata(metadata, null));
     }
 
-    private static Position createPosition(double x, double y) {
+    protected Position createPosition(double x, double y) {
         return new Position(x * POSITION_UNIT, y * POSITION_UNIT);
     }
 

@@ -54,7 +54,17 @@ class Adaptation extends Entity implements Serializable {
      */
     record AdaptationObjex(
         Key key,
-        Id datasourceId
+        @Nullable AdaptationMapping mapping
+    ) implements Serializable {}
+
+    // TODO Probably remove or like inline to the objex (and make the whole objex optional? Or sth ...)
+    record AdaptationMapping(
+        Id datasourceId,
+        // Some of these properties might be undefined if the DB doesn't support it (or if it would be too much pain to implement).
+        /** Estimated size of data in bytes. */
+        @Nullable Long dataSizeInBytes,
+        /** Estimated number of records. */
+        @Nullable Integer recordCount
     ) implements Serializable {}
 
     /**

@@ -9,7 +9,6 @@ import { useSortable } from '@/components/common/tableUtils';
 import { usePreferences } from '@/components/context/PreferencesProvider';
 import { Link, type Params, useLoaderData, useNavigate } from 'react-router-dom';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import { GoDotFill } from 'react-icons/go';
 import { useBannerState } from '@/types/utils/useBannerState';
 import { routes } from '@/routes/routes';
 import { FaPlus } from 'react-icons/fa';
@@ -222,7 +221,7 @@ function ActionsTable({ actions, onDeleteAction }: ActionsTableProps) {
 
 export function ActionInfoInner() {
     return (<>
-        <h2 className='text-lg font-semibold mb-2'>Understanding Actions & Jobs</h2>
+        <h2>Understanding Actions & Jobs</h2>
 
         <p>
             An <span className='font-bold'>Action</span> is something that <span className='font-bold'>spawns Jobs</span>.
@@ -230,22 +229,19 @@ export function ActionInfoInner() {
             For example, if you want to <span className='font-bold'>export data to PostgreSQL</span>, you create an <span className='font-bold'>Action</span> to start the process.
         </p>
 
-        <ul className='mt-3 space-y-2'>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+        <ul>
+            <li>
                 <span className='font-bold'>Action:</span> Spawns jobs (e.g., exporting data to PostgreSQL).
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Job:</span> A single execution of a transformation algorithm.
             </li>
-            <li className='flex items-center gap-2'>
-                <GoDotFill className='text-primary-500' />
+            <li>
                 <span className='font-bold'>Run:</span> A collection of multiple Job executions (similar to a CI/CD pipeline).
             </li>
         </ul>
 
-        <p className='mt-3'>
+        <p>
             Inspired by GitLab, Jobs are queued and executed sequentially. Runs help group multiple executions together.
         </p>
     </>);

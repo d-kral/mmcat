@@ -95,6 +95,7 @@ public class ExampleSetup {
     }
 
     // FIXME replace with real queries
+    /** @deprecated */
     final private String mockQuery = """
         SELECT {
             ?orders key ?orderkey .
@@ -104,6 +105,7 @@ public class ExampleSetup {
         }
         """;
 
+    /** @deprecated */
     private static QueryStats mockQueryStats(int seed, int executionCount, double factor) {
         final var random = new Random(seed);
 
@@ -125,11 +127,13 @@ public class ExampleSetup {
         );
     }
 
+    /** @deprecated */
     private static AggregatedLong mockLong(Random random, int executionCount, long min, long max) {
         final double sum = (min + max) / 2 * random.nextDouble(0.8, 1.2) * executionCount;
         return new AggregatedLong(min, max, (long) sum);
     }
 
+    /** @deprecated */
     private static AggregatedDouble mockDouble(Random random, int executionCount, double min, double max) {
         final double sum = (min + max) / 2 * random.nextDouble(0.8, 1.2) * executionCount;
         return new AggregatedDouble(min, max, sum);

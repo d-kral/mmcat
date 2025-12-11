@@ -1,6 +1,7 @@
 package cz.matfyz.tests.querying;
 
 import cz.matfyz.core.identifiers.Signature;
+import cz.matfyz.core.identifiers.Signature.SignatureGenerator;
 import cz.matfyz.core.querying.ResultStructure;
 import cz.matfyz.querying.resolver.queryresult.TformingResultStructure;
 
@@ -13,8 +14,11 @@ class ProjectionTests {
     @SuppressWarnings({ "java:s1068", "unused" })
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectionTests.class);
 
-    // TODO fix the default values in the result structures. They should not be needed for this test, however.
-    private static final Signature signature = Signature.empty();
+    private final SignatureGenerator signatureGenerator = SignatureGenerator.create();
+
+    private Signature signature() {
+        return signatureGenerator.next();
+    }
 
     @Test
     void onlyRootList() {
@@ -49,7 +53,7 @@ class ProjectionTests {
         new ProjectionTestBase()
             .input(
                 new ResultStructure("A[]", true, null)
-                    .addChild(new ResultStructure("B", false, null), signature)
+                    .addChild(new ResultStructure("B", false, null), signature())
                     .parent()
             )
             .output(output)
@@ -80,7 +84,7 @@ class ProjectionTests {
         new ProjectionTestBase()
             .input(
                 new ResultStructure("A[]", true, null)
-                    .addChild(new ResultStructure("B", false, null), signature)
+                    .addChild(new ResultStructure("B", false, null), signature())
                     .parent()
             )
             .output(output)
@@ -115,9 +119,9 @@ class ProjectionTests {
         new ProjectionTestBase()
             .input(
                 new ResultStructure("A[]", true, null)
-                .addChild(new ResultStructure("B[]", true, null), signature)
-                    .addChild(new ResultStructure("C[]", true, null), signature)
-                        .addChild(new ResultStructure("D", false, null), signature)
+                .addChild(new ResultStructure("B[]", true, null), signature())
+                    .addChild(new ResultStructure("C[]", true, null), signature())
+                        .addChild(new ResultStructure("D", false, null), signature())
                         .parent()
                     .parent()
                 .parent()
@@ -187,13 +191,13 @@ class ProjectionTests {
         new ProjectionTestBase()
             .input(
                 new ResultStructure("A[]", true, null)
-                    .addChild(new ResultStructure("B[]", true, null), signature)
-                        .addChild(new ResultStructure("C", false, null), signature)
+                    .addChild(new ResultStructure("B[]", true, null), signature())
+                        .addChild(new ResultStructure("C", false, null), signature())
                         .parent()
                     .parent()
-                    .addChild(new ResultStructure("D", false, null), signature)
+                    .addChild(new ResultStructure("D", false, null), signature())
                     .parent()
-                    .addChild(new ResultStructure("E", false, null), signature)
+                    .addChild(new ResultStructure("E", false, null), signature())
                     .parent()
             )
             .output(output)
@@ -257,10 +261,10 @@ class ProjectionTests {
         new ProjectionTestBase()
             .input(
                 new ResultStructure("A[]", true, null)
-                    .addChild(new ResultStructure("C", false, null), signature)
+                    .addChild(new ResultStructure("C", false, null), signature())
                     .parent()
-                    .addChild(new ResultStructure("D[]", true, null), signature)
-                        .addChild(new ResultStructure("F", false, null), signature)
+                    .addChild(new ResultStructure("D[]", true, null), signature())
+                        .addChild(new ResultStructure("F", false, null), signature())
                         .parent()
                     .parent()
             )
@@ -310,9 +314,9 @@ class ProjectionTests {
         new ProjectionTestBase()
             .input(
                 new ResultStructure("A[]", true, null)
-                    .addChild(new ResultStructure("B[]", true, null), signature)
-                        .addChild(new ResultStructure("C[]", true, null), signature)
-                            .addChild(new ResultStructure("D", false, null), signature)
+                    .addChild(new ResultStructure("B[]", true, null), signature())
+                        .addChild(new ResultStructure("C[]", true, null), signature())
+                            .addChild(new ResultStructure("D", false, null), signature())
                             .parent()
                         .parent()
                     .parent()
@@ -379,9 +383,9 @@ class ProjectionTests {
         new ProjectionTestBase()
             .input(
                 new ResultStructure("A[]", true, null)
-                    .addChild(new ResultStructure("B[]", true, null), signature)
-                        .addChild(new ResultStructure("C[]", true, null), signature)
-                            .addChild(new ResultStructure("D", false, null), signature)
+                    .addChild(new ResultStructure("B[]", true, null), signature())
+                        .addChild(new ResultStructure("C[]", true, null), signature())
+                            .addChild(new ResultStructure("D", false, null), signature())
                             .parent()
                         .parent()
                     .parent()
