@@ -197,7 +197,7 @@ public class ResultStructureMerger {
 
         if (presentSignature.isEmpty()) {
             // It can't be array because there must be a 1:1 path from join to match (and we know that match is not a child of join, because join doesn't exist yet).
-            join = parent.addChild(new ResultStructure(joinVar.name(), false, joinVar), parentToJoin);
+            join = parent.addChild(new ResultStructure(joinVar, false), parentToJoin);
 
             // We don't extend the current because this should be resolved before all other steps.
             current
@@ -217,7 +217,7 @@ public class ResultStructureMerger {
             // - The match is not a descendant of the child. So join can't be an array.
             final var isMatchInJoin = child.tryFindDescendantByVariable(matchVar) != null;
             final var isJoinArray = child.isArray && isMatchInJoin;
-            join = parent.addChild(new ResultStructure(joinVar.name(), isJoinArray, joinVar), parentToJoin);
+            join = parent.addChild(new ResultStructure(joinVar, isJoinArray), parentToJoin);
             final var newChild = isJoinArray ? child.copy(false) : child;
             join.addChild(newChild, joinToChild);
 

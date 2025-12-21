@@ -109,9 +109,7 @@ function PropertyDisplay({ property, selected, onClick, collapsedLevel }: Proper
                 ))}
             </div>
 
-            <div className='mm-target col-span-2 w-fit px-1' onClick={select}>
-                {'}'}
-            </div>
+            <div className='mm-target col-span-2 w-fit px-1' onClick={select}>{'}'}</div>
         </div>
     );
 };

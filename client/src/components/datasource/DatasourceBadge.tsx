@@ -52,3 +52,8 @@ const datasources: Record<DatasourceType, {
     // This icon means that we don't have a specific icon for this model.
     [DatasourceType.jsonld]: { label: 'JSON-LD', icon: BsFileEarmark },
 };
+
+export function datasourceCssColor(type: DatasourceType) {
+    const model = DATASOURCE_MODELS[type];
+    return `var(--mm-${model}-dark)`;
+}

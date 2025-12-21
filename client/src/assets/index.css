@@ -111,4 +111,8 @@
     .mm-access-path-selected > .mm-target {
         @apply text-success;
     }
+
+    .mm-tree-selectable:has(> .mm-target:hover) > .mm-target {
+        @apply bg-default-300;
+    }
 }

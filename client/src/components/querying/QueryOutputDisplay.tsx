@@ -1,5 +1,5 @@
-import { type Dispatch, type Key, useEffect, useRef, useState } from 'react';
-import { Query, type QueryPartDescription, type QueryDescription, type QueryResult, type QueryStats, type AggregatedNumber } from '@/types/query';
+import { type Dispatch, type Key, useEffect, useMemo, useRef, useState } from 'react';
+import { Query, type QueryPartDescription, type QueryDescription, type QueryResult, type QueryStats, type AggregatedNumber, ResultStructure } from '@/types/query';
 import { Button, NumberInput, Tab, Tabs } from '@heroui/react';
 import { cn } from '../common/utils';
 import { QueryTreeDisplay } from './QueryTreeDisplay';
@@ -12,6 +12,7 @@ import { api } from '@/api';
 import { toast } from 'react-toastify';
 import { useRevalidator } from 'react-router-dom';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { ResultStructureDisplay } from './ResultStructureDisplay';
 
 type QueryOutputDisplayProps = {
     query: Query | undefined;
@@ -162,6 +163,8 @@ function QueryPartDisplay({ part, index, datasources }: QueryPartDisplayProps) {
 
     const bgColor = index % 2 === 0 ? 'bg-default-50' : 'bg-default-100';
 
+    const structure = useMemo(() => ResultStructure.fromResponse(part.structure), [ part.structure ]);
+
     return (
         <div>
             <h3 className='mb-1 text-lg font-semibold'>
@@ -171,9 +174,7 @@ function QueryPartDisplay({ part, index, datasources }: QueryPartDisplayProps) {
             </h3>
 
             <div className='font-semibold text-foreground-400'>Structure:</div>
-            <pre className={cn('px-2 py-1 rounded-small font-mono whitespace-pre-wrap break-words', bgColor)}>
-                {JSON.stringify(part.structure, undefined, 4)}
-            </pre>
+            <ResultStructureDisplay structure={structure} />
 
             <div className='mt-2 font-semibold text-foreground-400'>Content:</div>
             <pre className={cn('px-2 py-1 rounded-small font-mono whitespace-pre-wrap break-words', bgColor)}>

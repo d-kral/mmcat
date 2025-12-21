@@ -110,7 +110,7 @@ public class PatternTree implements Comparable<PatternTree>, Printable {
 
     public record SerializedPatternTree(
         int objexKey,
-        String term,
+        Variable variable,
         Map<BaseSignature, SerializedPatternTree> children
     ) {};
 
@@ -118,7 +118,7 @@ public class PatternTree implements Comparable<PatternTree>, Printable {
         final var map = new TreeMap<BaseSignature, SerializedPatternTree>();
         children.entrySet().forEach(entry -> map.put(entry.getKey(), entry.getValue().serialize()));
 
-        return new SerializedPatternTree(objex.key().getValue(), variable.toString(), map);
+        return new SerializedPatternTree(objex.key().getValue(), variable, map);
     }
 
 }
